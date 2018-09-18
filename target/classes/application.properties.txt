@@ -1,0 +1,2 @@
+#THE MOVIE DB API v3
+movie.api.key=791db8ffb108ed8cd809f256dca5bfbf
