@@ -1,29 +1,21 @@
 package com.asu.MovieRecommender.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.web.client.RestTemplate;
+/**@Configuration
+@EnableOAuth2Sso**/
+public class MovieRecommenderConfig  {
+	/** 
+	@Override
+	    protected void configure(HttpSecurity http) throws Exception {
+	        http
+	                .csrf()
+	                    .disable()
+	                .antMatcher("/**")
+	                .authorizeRequests()
+	                .antMatchers("/index.html")
+	                    .permitAll()
+	                .anyRequest()
+	                    .authenticated();
+	    }
+	    **/
 
-import com.mongodb.MongoClient;
-
-public class MovieRecommenderConfig {
-
-	@Bean
-	public RestTemplate restTemlate() {
-		return new RestTemplate();
-	}
-	
-	public @Bean
-	MongoDbFactory mongoDbFactory() throws Exception {
-		return new SimpleMongoDbFactory(new MongoClient(), "movie");
-	}
-
-	public @Bean
-	MongoTemplate mongoTemplate() throws Exception {
-		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
-		return mongoTemplate;
-	}
-	
 }
