@@ -1,5 +1,6 @@
 package com.asu.MovieRecommender.Services;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class RegisterService {
 
 	public boolean addUser(User userDefine) throws RegisterException {
 		try {
+			userDefine.setUserPassword(passwordEncryptor(userDefine.getUserPassword()));
 			userRepo.insert(userDefine);
 			return true;
 		} catch (Exception ex) {
@@ -65,7 +67,7 @@ public class RegisterService {
 						&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 					if (!ifContactNoExists(strContactNo)) {
 						if (!ifEmailIdExists(strEmailId)) {
-							if (operationType == MovieRecommenderConstants.OPERATION_TYPE_NEW_USER) {
+							if (operationType .equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 								if (addUser(userDefine)) {
 									return new ResponseEntity<>(HttpStatus.OK);
 								}
@@ -101,4 +103,15 @@ public class RegisterService {
 		return response;
 	}
 
+	public String passwordEncryptor(String userPassword)
+	{
+		if(null!=userPassword)
+		{
+	   StrongPasswordEncryptor passwordEnc = new StrongPasswordEncryptor();	
+	   return passwordEnc.encryptPassword(userPassword);
+		}else {
+			return null;
+		}
+	}
+	
 }
