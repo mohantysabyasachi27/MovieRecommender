@@ -1,10 +1,11 @@
 package com.asu.MovieRecommender.Services;
 
-import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
 import com.asu.MovieRecommender.DBServices.UserRepoCrud;
@@ -17,6 +18,9 @@ public class RegisterService {
 	@Autowired
 	private UserRepoCrud userRepo;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	public boolean ifUserExists(String userName) throws RegisterException {
 
 		return (null != userRepo.findByUserName(userName));
@@ -25,7 +29,7 @@ public class RegisterService {
 
 	public boolean addUser(User userDefine) throws RegisterException {
 		try {
-			userDefine.setUserPassword(passwordEncryptor(userDefine.getUserPassword()));
+			userDefine.setUserPassword(passwordEncoder.encode(userDefine.getUserPassword()));
 			userRepo.insert(userDefine);
 			return true;
 		} catch (Exception ex) {
@@ -67,15 +71,14 @@ public class RegisterService {
 						&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 					if (!ifContactNoExists(strContactNo)) {
 						if (!ifEmailIdExists(strEmailId)) {
-							if (operationType .equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+							if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 								if (addUser(userDefine)) {
 									return new ResponseEntity<>(HttpStatus.OK);
 								}
 							}
 						}
 					} else {
-						return new ResponseEntity<>("User with the same Contact No already exists",
-								HttpStatus.OK);
+						return new ResponseEntity<>("User with the same Contact No already exists", HttpStatus.OK);
 
 					}
 				} else {
@@ -103,15 +106,4 @@ public class RegisterService {
 		return response;
 	}
 
-	public String passwordEncryptor(String userPassword)
-	{
-		if(null!=userPassword)
-		{
-	   StrongPasswordEncryptor passwordEnc = new StrongPasswordEncryptor();	
-	   return passwordEnc.encryptPassword(userPassword);
-		}else {
-			return null;
-		}
-	}
-	
 }

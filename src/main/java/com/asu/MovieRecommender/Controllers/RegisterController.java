@@ -21,7 +21,7 @@ public class RegisterController {
 	@Autowired
 	RegisterService registerService;
 
-	@RequestMapping(method = RequestMethod.POST, value = "/register/User/{operationType}")
+	@RequestMapping(method = RequestMethod.POST, value = "/register/user/{operationType}")
 	public @ResponseBody ResponseEntity<String> register(@RequestBody User userDefine,@PathVariable String operationType) {
 	      return registerService.addUserAfterValidation(userDefine,operationType);
 

@@ -17,4 +17,10 @@ public class LoginController
 	public String postLoginGoogle() throws Exception {
 		   return "welcome";	
 		    }
+
+	@RequestMapping(method=RequestMethod.GET,value="/oauth2")  
+	public String LoginGoogle() throws Exception {
+		   return "welcome to google login";	
+		    }
+	
 }
