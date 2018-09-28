@@ -15,6 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	
+	
+/*
+ * @author Sabyasachi Mohanty
+ * @since Sept28, Sprint-1
+ * @Task Integrate Spring Security
+ */
+	
+	
 	@Autowired
 	private UserDetailsService userDetailsService;
 

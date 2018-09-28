@@ -9,6 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails extends User implements UserDetails{
 
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Integrate Spring Security -- Custom UserDetails object which the auth manager uses.
+	 */
 
 	public CustomUserDetails(final User user) {
 		super(user);

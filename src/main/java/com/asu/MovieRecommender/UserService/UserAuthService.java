@@ -13,6 +13,12 @@ import com.asu.MovieRecommender.User.User;
 @Service
 public class UserAuthService implements UserDetailsService {
 
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Integrate Spring Security
+	 */
+	
 	@Autowired
 	private UserRepoCrud userRepoCrud;
 

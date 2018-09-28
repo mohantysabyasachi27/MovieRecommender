@@ -6,6 +6,13 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 @Configuration
 public class SessionConfig extends AbstractHttpSessionApplicationInitializer {
 	
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Integrate Spring Session Management. 
+	 */
+	
+	
 	public SessionConfig() {
 		super(MovieRecommenderConfig.class);
 	}

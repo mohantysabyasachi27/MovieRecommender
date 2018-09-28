@@ -5,6 +5,12 @@ import com.asu.MovieRecommender.User.User;
 
 public interface UserLoginService {
 
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Integrate Spring Security
+	 */
+	
 	User getLoggedUser();
 
 	CustomUserDetails getLoggedUserDetails();
