@@ -42,10 +42,10 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		try {
 			response = restTemplate.getForObject(apiUrl.buildUrl().toURI(), JSONObject.class);
-			response.remove("dates");
-			response.remove("page");
-			response.remove("total_pages");
-			response.remove("total_results");
+			response.remove(Constants.DATE_ATTRIBUTE);
+			response.remove(Constants.PAGE_ATTRIBUTE);
+			response.remove(Constants.TOTAL_PAGES_ATTRIBUTE);
+			response.remove(Constants.TOTAL_RESULTS_ATTRIBUTE);
 			System.out.println("response: " + response);
 
 		} catch (RestClientException e) {

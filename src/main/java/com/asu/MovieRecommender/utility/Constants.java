@@ -9,5 +9,9 @@ public class Constants {
 	public static final String PARAM_ID = "id";
 	public static final String PARAM_ADULT = "include_adult";
 	public static final String PARAM_API_KEY = "api_key";
+	public static final String DATE_ATTRIBUTE = "dates";
+	public static final String PAGE_ATTRIBUTE = "page";
+	public static final String TOTAL_PAGES_ATTRIBUTE = "total_pages";
+	public static final String TOTAL_RESULTS_ATTRIBUTE ="total_results";
 	
 }
