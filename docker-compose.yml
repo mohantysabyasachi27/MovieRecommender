@@ -1,0 +1,30 @@
+version: '3'
+services:
+   web:
+       build: .
+       ports:
+           - "8081:8081"
+       links:
+           - redis
+           - mongodb
+       networks:
+            - movierecommeder
+            
+   redis:
+       image: "redis:alpine"
+       hostname: redis
+       ports:
+            - "6379:6379"
+       networks:
+            - movierecommeder
+            
+   mongodb:
+       image: mongo:latest
+       ports:
+            - 27017:27017
+       networks:
+            - movierecommeder 
+                
+networks:
+   movierecommeder:
+       driver: bridge
