@@ -10,7 +10,13 @@ import com.asu.MovieRecommender.User.CustomUserDetails;
 import com.asu.MovieRecommender.User.User;
 
 public class SpringSecurityUserLoginService implements UserLoginService {
-
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Integrate Spring Sessions -- This class is to check the Loggedin user details from sessions context
+	 */
+	
+	
 	@Autowired
 	private UserRepoCrud userRepoCrud;
 

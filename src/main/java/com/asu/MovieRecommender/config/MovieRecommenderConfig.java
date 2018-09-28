@@ -30,6 +30,13 @@ import com.mongodb.MongoClient;
 @EnableRedisHttpSession
 @PropertySource("classpath:api.properties")
 public class MovieRecommenderConfig {
+	
+	/*
+	 * @author Sabyasachi Mohanty
+	 * @since Sept28, Sprint-1
+	 * @Task Bean Definations for Spring Boot Project
+	 */
+	
 	private static List<String> clients = Arrays.asList("google"/*, "facebook"*/);
 
 	@Value("${spring.security.oauth2.client.clientId}")
