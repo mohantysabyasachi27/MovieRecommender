@@ -18,7 +18,7 @@ public class LoginController
 		   return "welcome";	
 		    }
 
-	@RequestMapping(method=RequestMethod.GET,value="/oauth2")  
+	@RequestMapping(method=RequestMethod.GET,value="/login/laudu")  
 	public String LoginGoogle() throws Exception {
 		   return "welcome to google login";	
 		    }

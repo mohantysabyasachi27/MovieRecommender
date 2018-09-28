@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and()
 				.formLogin()/* .loginPage("/movieloginpage.html") */
-				.defaultSuccessUrl("/oauth2")
+				.defaultSuccessUrl("/login/laudu",true)
 				.permitAll().and()
 		        .oauth2Login()
 		        .and()
