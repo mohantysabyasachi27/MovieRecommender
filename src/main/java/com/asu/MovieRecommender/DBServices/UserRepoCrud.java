@@ -4,6 +4,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.asu.MovieRecommender.User.User;
 
+/**
+ * @author kumar
+ * This serves as a Mongo Repository interface for CRUD operations.
+ *
+ */
 public interface UserRepoCrud extends MongoRepository<User, String> {
 	
 	public User findByUserName(String userName);
