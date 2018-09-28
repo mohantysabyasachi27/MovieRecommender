@@ -12,6 +12,11 @@ import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.Exceptions.RegisterException;
 import com.asu.MovieRecommender.User.User;
 
+/**
+ * 
+ * @author kumar
+ * This serves as a register service which handles encoding, adding and editing user.
+ */
 @Service
 public class RegisterService {
 

@@ -15,6 +15,10 @@ import com.asu.MovieRecommender.Exceptions.RegisterException;
 import com.asu.MovieRecommender.Services.RegisterService;
 import com.asu.MovieRecommender.User.User;
 
+/**
+ * @author kumar
+ *This class serves a a controller to the Registration/SignUp Page requests.
+ */
 @RestController
 public class RegisterController {
 

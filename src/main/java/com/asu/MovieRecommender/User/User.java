@@ -10,6 +10,12 @@ import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * 
+ * @author kumar
+ * This class is a POJO class for USer Object and transforms it into a Collection object for MongoDB.
+ *
+ */
 @Document(collection = "UserDetails")
 public class User {
 
