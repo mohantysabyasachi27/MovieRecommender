@@ -118,11 +118,11 @@
 		  	<artifactId>gson</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
-		<dependency>
+	<!-- 	<dependency>
 			 <groupId>org.json</groupId>
 			 <artifactId>json</artifactId>
 			 <version>20180813</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 	<build>
@@ -131,7 +131,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
+			<!-- 
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
@@ -153,7 +153,8 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
+			
 		</plugins>
 	</build>
 

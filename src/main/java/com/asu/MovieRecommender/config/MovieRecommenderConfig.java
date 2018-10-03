@@ -27,7 +27,6 @@ import com.asu.MovieRecommender.UserService.UserLoginService;
 import com.mongodb.MongoClient;
 
 @Configuration
-@EnableRedisHttpSession
 @PropertySource("classpath:api.properties")
 public class MovieRecommenderConfig {
 	
