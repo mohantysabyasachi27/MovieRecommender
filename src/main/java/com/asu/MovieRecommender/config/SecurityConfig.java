@@ -38,9 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
-		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and()
+		http.authorizeRequests().antMatchers(/*"/login/**",*/ "/swagger-ui/**").authenticated().anyRequest().permitAll().and()
 				.formLogin()/* .loginPage("/movieloginpage.html") */
-				.defaultSuccessUrl("/login/laudu",true)
+				.defaultSuccessUrl("/login/",true)
 				.permitAll().and()
 		        .oauth2Login()
 		        .and()

@@ -12,7 +12,11 @@ import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
 import com.asu.MovieRecommender.User.CustomUserDetails;
 import com.asu.MovieRecommender.UserService.UserLoginService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
+@Api(value = "Login Service")
 public class LoginController {
 	@Autowired
 	private UserLoginService userLoginService;
@@ -32,6 +36,7 @@ public class LoginController {
 		return "welcome to google login";
 	}
 
+	@ApiOperation(value = "Service to get the user details", nickname = "User Details", response = String.class, produces = "application/json")
 	@RequestMapping(value = { "/user" }, method = RequestMethod.GET)
 	public String getGeofences(HttpServletRequest request, ModelMap model) {
 		CustomUserDetails loggedinUser = userLoginService.getLoggedUserDetails();
