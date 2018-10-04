@@ -1,6 +1,6 @@
 package com.asu.MovieRecommender.Exceptions;
 
-public class UserNotFoundException extends Exception {
+public class UserNotFoundException extends RuntimeException {
 	/**
 	 * @author Sabyasachi
 	 * @since 25th Sept
@@ -17,4 +17,3 @@ public class UserNotFoundException extends Exception {
 		return errorMessage;
 	}
 }
-
