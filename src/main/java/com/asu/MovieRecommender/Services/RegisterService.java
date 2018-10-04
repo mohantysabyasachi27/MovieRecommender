@@ -23,6 +23,7 @@ public class RegisterService {
 
 	public boolean ifUserExists(String userName) throws RegisterException {
 
+		// System.out.println(userRepo.findByUserName(userName).getUserName());
 		return (null != userRepo.findByUserName(userName));
 
 	}
@@ -73,12 +74,13 @@ public class RegisterService {
 						if (!ifEmailIdExists(strEmailId)) {
 							if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 								if (addUser(userDefine)) {
-									return new ResponseEntity<>(HttpStatus.OK);
+									return new ResponseEntity<>("Added User", HttpStatus.OK);
 								}
 							}
 						}
 					} else {
-						return new ResponseEntity<>("User with the same Contact No already exists", HttpStatus.OK);
+						return new ResponseEntity<>("User with the same Contact No already exists",
+								HttpStatus.CONFLICT);
 
 					}
 				} else {
@@ -86,9 +88,11 @@ public class RegisterService {
 							&& ifUserExists(strUserName)) {
 						if (editUser(userDefine)) {
 
-							return new ResponseEntity<>("Success", HttpStatus.OK);
+							return new ResponseEntity<>("Changes made Successfully", HttpStatus.OK);
 
 						}
+					} else {
+						return new ResponseEntity<>("User does not exist", HttpStatus.FORBIDDEN);
 					}
 
 					return new ResponseEntity<>("User Exists with same userName", HttpStatus.CONFLICT);

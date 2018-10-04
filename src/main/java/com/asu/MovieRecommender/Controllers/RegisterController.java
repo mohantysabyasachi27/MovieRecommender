@@ -25,7 +25,7 @@ public class RegisterController {
 	public @ResponseBody ResponseEntity<String> register(@RequestBody User userDefine,@PathVariable String operationType) {
 	      return registerService.addUserAfterValidation(userDefine,operationType);
 
-	}
+	}	 
 
 	
 }
