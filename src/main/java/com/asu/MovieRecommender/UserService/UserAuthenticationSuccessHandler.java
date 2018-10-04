@@ -4,6 +4,7 @@
 package com.asu.MovieRecommender.UserService;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.asu.MovieRecommender.User.LogInReponse;
+import com.google.gson.Gson;
 
 @Component
 public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
@@ -29,6 +31,15 @@ public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		response.addHeader("status", "200");response.setStatus(200);
 		response.addHeader("Error", "");
 		response.addHeader("success", "true");
+		
+		
+		strLogInResponse = new Gson().toJson(logInResponse);
+		PrintWriter out = response.getWriter();
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		out.print(strLogInResponse);
+		out.flush();
+		out.close();
 		
 	}
 
