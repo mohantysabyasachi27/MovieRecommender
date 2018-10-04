@@ -6,16 +6,24 @@ services:
     ports:
       - "6379:6379"
     network_mode: host
-
-  web:
-    build: .
-    ports:
-      - "8081:8081"
-    network_mode: host
-
+    
   db:
     image: bitnami/mongodb:latest
     hostname: mongodb
     ports:
       - "27017:27017"
     network_mode: host
+
+  web:
+    build: .
+    ports:
+      - "8081:8081"
+    network_mode: host
+  
+  ui:
+    build: 
+      context: movierec-ang/.
+    ports:
+      - "4200:4200"
+    network_mode: host
+
