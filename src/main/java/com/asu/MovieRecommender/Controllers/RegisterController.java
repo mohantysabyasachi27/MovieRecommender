@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.Exceptions.RegisterException;
 import com.asu.MovieRecommender.Services.RegisterService;
+import com.asu.MovieRecommender.User.Response;
 import com.asu.MovieRecommender.User.User;
 
 @RestController
@@ -22,7 +23,7 @@ public class RegisterController {
 	RegisterService registerService;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/register/user/{operationType}")
-	public @ResponseBody ResponseEntity<String> register(@RequestBody User userDefine,@PathVariable String operationType) {
+	public @ResponseBody ResponseEntity<Response> register(@RequestBody User userDefine,@PathVariable String operationType) {
 	      return registerService.addUserAfterValidation(userDefine,operationType);
 
 	}	 

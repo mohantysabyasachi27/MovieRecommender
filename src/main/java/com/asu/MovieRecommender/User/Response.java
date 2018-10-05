@@ -3,13 +3,13 @@
  */
 package com.asu.MovieRecommender.User;
 
-public class LogInReponse {
+public class Response {
 
 	private String statusCode ;
 	private boolean success;
 	private String errorReason;
 	
-	public LogInReponse(String statusCode, boolean success, String errorReason) {
+	public Response(String statusCode, boolean success, String errorReason) {
 		super();
 		this.statusCode = statusCode;
 		this.success = success;

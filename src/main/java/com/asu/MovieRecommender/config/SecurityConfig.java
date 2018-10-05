@@ -18,6 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.asu.MovieRecommender.UserService.UserAuthenticationFailureHandler;
 import com.asu.MovieRecommender.UserService.UserAuthenticationSuccessHandler;
+import com.asu.MovieRecommender.UserService.UserGoogleAuthenticationSuccessHandler;
 
 @EnableWebSecurity
 @Configuration
@@ -39,6 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private PasswordEncoder passwordencoder;
 
 	@Autowired
+	private UserGoogleAuthenticationSuccessHandler userGoogleAuthenticationHandler;
+	@Autowired
 	private UserAuthenticationFailureHandler userAuthenticationFailureHandler;
 	@Autowired
 	private UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
@@ -55,8 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and().formLogin()
 				.failureUrl("/login?error").failureHandler(userAuthenticationFailureHandler)
 				.successHandler(userAuthenticationSuccessHandler)/* .loginPage("/movieloginpage.html") */
-				.permitAll().and().oauth2Login().defaultSuccessUrl("/login1", true)
-				.successHandler(userAuthenticationSuccessHandler).and().logout().logoutSuccessUrl("/oauth2");
+				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler)
+				.and().logout().logoutSuccessUrl("/oauth2");
 
 		/*
 		 * http .authorizeRequests() .antMatchers("/login*").anonymous()
