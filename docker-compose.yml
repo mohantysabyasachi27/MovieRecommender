@@ -22,7 +22,8 @@ services:
   
   ui:
     build: 
-      context: movierec-ang/.
+      context: movierec-ang/MovieRecommender
+      dockerfile: Dockerfile
     ports:
       - "4200:4200"
     network_mode: host
