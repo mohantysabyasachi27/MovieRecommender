@@ -27,12 +27,12 @@ After Docker is installed : <br /> <br />
 
 # For windows & Mac OS: To get the IP address on which the application runs : 
 <br />
-$ docker-machine ip 
+$ docker-machine ip <br />
+
+
+# For Linux: To get the IP address on which the application runs : 
 <br />
-# For Linux: 
-<br />
-IP is the localhost
-<br />
+IP is the localhost <br />
 
 # Step-1 -> Clone the project:
 <br />
