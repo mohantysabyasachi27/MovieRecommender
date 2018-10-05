@@ -16,26 +16,36 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.asu.MovieRecommender.UserService.UserAuthenticationFailureHandler;
+import com.asu.MovieRecommender.UserService.UserAuthenticationSuccessHandler;
+import com.asu.MovieRecommender.UserService.UserGoogleAuthenticationSuccessHandler;
+
 @EnableWebSecurity
 @Configuration
 @EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	
-	
-/*
- * @author Sabyasachi Mohanty
- * @since Sept28, Sprint-1
- * @Task Integrate Spring Security
- */
-	
-	
+	/*
+	 * @author Sabyasachi Mohanty & Kumar Prabhu Kalyan
+	 * 
+	 * @since Sept28, Sprint-1
+	 * 
+	 * @Task Integrate Spring Security
+	 */
+
 	@Autowired
 	private UserDetailsService userDetailsService;
 
 	@Autowired
 	private PasswordEncoder passwordencoder;
-	
+
+	@Autowired
+	private UserGoogleAuthenticationSuccessHandler userGoogleAuthenticationHandler;
+	@Autowired
+	private UserAuthenticationFailureHandler userAuthenticationFailureHandler;
+	@Autowired
+	private UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordencoder);
@@ -45,29 +55,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 		http.cors();
-		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and()
-				.formLogin()/* .loginPage("/movieloginpage.html") */
-				.permitAll().and()
-		        .oauth2Login()
-		        .and()
-		          .logout().logoutSuccessUrl("/oauth2");
-		
-		
+		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and().formLogin()
+				.failureUrl("/login?error").failureHandler(userAuthenticationFailureHandler)
+				.successHandler(userAuthenticationSuccessHandler)/* .loginPage("/movieloginpage.html") */
+				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler)
+				.and().logout().logoutSuccessUrl("/oauth2");
+
 		/*
-		   http
-          .authorizeRequests()
-          .antMatchers("/login*").anonymous()
-          .anyRequest().authenticated()
-          .and()
-          .formLogin()
-          .loginPage("/login.html")
-          .defaultSuccessUrl("/homepage.html")
-          .failureUrl("/login.html?error=true")
-          .and()
-          .logout().logoutSuccessUrl("/login.html");
+		 * http .authorizeRequests() .antMatchers("/login*").anonymous()
+		 * .anyRequest().authenticated() .and() .formLogin() .loginPage("/login.html")
+		 * .defaultSuccessUrl("/homepage.html") .failureUrl("/login.html?error=true")
+		 * .and() .logout().logoutSuccessUrl("/login.html");
 		 */
 	}
-	
+
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
