@@ -1,24 +1,24 @@
-# MovieRecommender
-• A movie showtime finder
+# MovieRecommender <br />
+• A movie showtime finder <br />
 
-Install Docker.. https://store.docker.com/search?type=edition&offering=community
+Install Docker.. https://store.docker.com/search?type=edition&offering=community <br />
 
-After Docker is installed : 
-# Docker for Linux - You are good to go. 
+After Docker is installed : <br />
+# Docker for Linux - You are good to go. <br />
 
 # Docker for Mac - You can use docker-machine create with the virtualbox driver to create additional local machines.
-  Run : $ docker-machine create --driver virtualbox default
-        $ docker-machine create
-        $ eval $(docker-machine env default)
-        $ docker-machine active
-        $ docker-machine ip
+  Run : $ docker-machine create --driver virtualbox default <br />
+        $ docker-machine create <br />
+        $ eval $(docker-machine env default) <br />
+        $ docker-machine active <br />
+        $ docker-machine ip <br />
 
-# Docker for Windows - You can use docker-machine create with the hyperv driver to create additional local machines
-  Run : $ docker-machine create --driver hyperv default
-        $ docker-machine create
-        $ eval $(docker-machine env default)
-        $ docker-machine active
-        $ docker-machine ip
+# Docker for Windows - You can use docker-machine create with the hyperv driver to create additional local machines <br />
+  Run : $ docker-machine create --driver hyperv default <br />
+        $ docker-machine create <br />
+        $ eval $(docker-machine env default) <br />
+        $ docker-machine active <br />
+        $ docker-machine ip <br />
 
 # For windows & Mac OS: To get the IP address on which the application runs : docker-machine ip 
 # For Linux: IP is the localhost
