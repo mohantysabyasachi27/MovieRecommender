@@ -1,10 +1,13 @@
-# MovieRecommender <br />
+# MovieRecommender 
+<br />
 • A movie showtime finder <br />
 
 Install Docker.. https://store.docker.com/search?type=edition&offering=community <br />
 
-After Docker is installed : <br />
-# Docker for Linux - You are good to go. <br />
+After Docker is installed : <br /> <br />
+
+# Docker for Linux - You are good to go. 
+<br />
 
 # Docker for Mac - You can use docker-machine create with the virtualbox driver to create additional local machines.
   <br />
@@ -14,7 +17,7 @@ After Docker is installed : <br />
         $ docker-machine active <br />
         $ docker-machine ip <br />
 
-# Docker for Windows - You can use docker-machine create with the hyperv driver to create additional local machines <br />
+# Docker for Windows - You can use docker-machine create with the hyperv driver to create additional local machines
   <br />
   Run : $ docker-machine create --driver hyperv default <br />
         $ docker-machine create <br />
