@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
  */
 
 @RestController
+@CrossOrigin(origins="*", allowedHeaders="*")
 public class MovieController {
 	
 	@Value("${movie.api.key}")
