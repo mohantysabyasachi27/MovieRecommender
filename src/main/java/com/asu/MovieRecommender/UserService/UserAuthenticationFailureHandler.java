@@ -3,28 +3,21 @@
  */
 package com.asu.MovieRecommender.UserService;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import com.asu.MovieRecommender.Exceptions.UserNotFoundException;
-import com.asu.MovieRecommender.User.LogInReponse;
+import com.asu.MovieRecommender.User.Response;
 import com.google.gson.Gson;
-import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 
 @Component
 public class UserAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -33,7 +26,7 @@ public class UserAuthenticationFailureHandler implements AuthenticationFailureHa
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
 		
-         LogInReponse logInResponse= new LogInReponse(HttpStatus.OK.toString(), true, "");
+         Response logInResponse= new Response(HttpStatus.OK.toString(), true, "");
 		String strLogInResponse = null;
 		
 		if(exception.getClass().isAssignableFrom(BadCredentialsException.class))
