@@ -23,12 +23,17 @@ After Docker is installed : <br /> <br />
         $ docker-machine create <br />
         $ eval $(docker-machine env default) <br />
         $ docker-machine active <br />
-        $ docker-machine ip <br />
+        <br />
 
-# For windows & Mac OS: To get the IP address on which the application runs : docker-machine ip 
+# For windows & Mac OS: To get the IP address on which the application runs : 
 <br />
-# For Linux: IP is the localhost
+$ docker-machine ip 
 <br />
+# For Linux: 
+<br />
+IP is the localhost
+<br />
+
 # Step-1 -> Clone the project:
 <br />
 $ git clone https://github.com/mohantysabyasachi27/MovieRecommender/ <br />
