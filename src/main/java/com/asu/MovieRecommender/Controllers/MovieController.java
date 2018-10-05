@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.asu.MovieRecommender.config.BasicConfiguration;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 
@@ -20,6 +20,7 @@ import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
  */
 
 @RestController
+@CrossOrigin(origins="*", allowedHeaders="*")
 public class MovieController {
 	
 	@Value("${movie.api.key}")
