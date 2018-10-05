@@ -1,0 +1,3 @@
+[submodule "movierec-ang/MovieRecommender"]
+	path = movierec-ang/MovieRecommender
+	url = https://github.com/ishansarangi/MovieRecommender.git
