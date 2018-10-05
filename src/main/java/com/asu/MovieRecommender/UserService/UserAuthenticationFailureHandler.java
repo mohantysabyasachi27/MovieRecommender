@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.stereotype.Component;
 
 import com.asu.MovieRecommender.Exceptions.UserNotFoundException;
-import com.asu.MovieRecommender.User.LogInReponse;
+import com.asu.MovieRecommender.User.Response;
 import com.google.gson.Gson;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 
@@ -33,7 +33,7 @@ public class UserAuthenticationFailureHandler implements AuthenticationFailureHa
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
 		
-         LogInReponse logInResponse= new LogInReponse(HttpStatus.OK.toString(), true, "");
+         Response logInResponse= new Response(HttpStatus.OK.toString(), true, "");
 		String strLogInResponse = null;
 		
 		if(exception.getClass().isAssignableFrom(BadCredentialsException.class))

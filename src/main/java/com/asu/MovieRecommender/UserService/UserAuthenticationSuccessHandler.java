@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.asu.MovieRecommender.User.LogInReponse;
+import com.asu.MovieRecommender.User.Response;
 
 @Component
 public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
@@ -22,7 +22,7 @@ public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHa
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication exception)
 			throws IOException, ServletException {
-		 LogInReponse logInResponse= new LogInReponse(HttpStatus.OK.toString(), true, "");
+		 Response logInResponse= new Response(HttpStatus.OK.toString(), true, "");
 			String strLogInResponse = null;
 			
 			
