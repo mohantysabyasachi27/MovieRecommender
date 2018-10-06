@@ -16,7 +16,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.asu.MovieRecommender.User.Response;
+
 import com.google.gson.Gson;
+
 
 @Component
 public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
