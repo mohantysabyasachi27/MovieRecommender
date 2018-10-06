@@ -14,8 +14,10 @@ After Docker is installed : <br /> <br />
   Run : $ docker-machine create --driver virtualbox default <br />
         $ docker-machine create <br />
         $ eval $(docker-machine env default) <br />
+        $ docker-machine start <br />
         $ docker-machine active <br />
         $ docker-machine ip <br />
+        
 
 # Docker for Windows - You can use docker-machine create with the hyperv driver to create additional local machines
   <br />
