@@ -42,15 +42,12 @@ $ git clone https://github.com/mohantysabyasachi27/MovieRecommender/ <br />
 <br />
 $ git submodule init  <br />
 $ git submodule update  <br />
-                     
-# Step - 3 -> Run this : 
-<br />
-$ sudo docker-compose down && mvn clean install <br />
+ <br />
 
-# Step - 4 -> Run the docker containers:
+# Step - 3 -> Run the docker containers:
 <br />
 $ sudo docker-compose up --build
 <br />
-# Step - 5 -> Once the docker containers start.
+# Step - 4 -> Once the docker containers start.
  <br />
  Open web browser and hit http://{IP}:4200/, where IP is obtained from the above steps. 
