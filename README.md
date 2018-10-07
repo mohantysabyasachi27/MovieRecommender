@@ -42,6 +42,7 @@ $ git clone https://github.com/mohantysabyasachi27/MovieRecommender/ <br />
 
 # Step-2 -> Clone the Submodule - Frontend: 
 <br />
+$ cd MovieRecommender
 $ git submodule init  <br />
 $ git submodule update  <br />
  <br />
