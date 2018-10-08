@@ -1,7 +1,10 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
-import org.json.simple.JSONObject;
+import java.net.URISyntaxException;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -17,8 +20,6 @@ import com.asu.MovieRecommender.utility.Constants;
 public class TheMovieDBServiceBean implements TheMovieDBService {
 
 	private final RestTemplate restTemplate;
-	private String language = "en-US";
-	private Integer page = 1;
 
 	public TheMovieDBServiceBean(RestTemplateBuilder restTemplateBuilder) {
 		restTemplate = restTemplateBuilder.build();
@@ -30,38 +31,23 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	 *         movies and returns the response to the user.
 	 */
 	@Override
-	public JSONObject getNowPlayingMovies() {
+	public ResponseEntity<MoviesList> getNowPlayingMovies() {
 
-		ApiUrl apiUrl = new ApiUrl(Constants.NOWPLAYING);
-
-		apiUrl.addkey();
-		apiUrl.addLanguage(language);
-		apiUrl.addPage(page);
-
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.MOVIES);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_CINEMA_ID, Constants.PARAM_CINEMA_ID_VALUE);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.API_KEY_STRING, Constants.API_KEY_STRING_VALUE);
+		
 		MoviesList response = null;
 
 		try {
-			response = restTemplate.getForObject(
-					"https://api.internationalshowtimes.com/v4/movies/?cinema_id=40849&apikey=yuUdRKK7dyGG1bjABTFDSbHjV07MERxZ",
-					MoviesList.class);
-
-			for (int i = 0; i < response.getMovies().size(); i++) {
-				System.out.println(response.getMovies().get(i).getId());
-			}
-			for (int i = 0; i < Constants.NO_OF_MOVIES; i++) {
-				int movieId = Movie.getNowPlayingMovies().get(i);
-				String url = "https://api.internationalshowtimes.com/v4/showtimes?apikey=yuUdRKK7dyGG1bjABTFDSbHjV07MERxZ&city_ids=1901&movie_id="
-						+ Movie.getNowPlayingMovies().get(i);
-				ShowtimesList showtimes = restTemplate.getForObject(url, ShowtimesList.class);
-				Movie movie = Movie.getMovieMap().get(movieId);
-				System.out.println(movie);
-				movie.setAllTheatresShowtime(showtimes);
-			}
+			response = restTemplate.getForObject(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), MoviesList.class);
 
 		} catch (RestClientException e) {
 
 			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
-		return new JSONObject();
+		return new ResponseEntity<MoviesList>(response, HttpStatus.OK);
 	}
 }

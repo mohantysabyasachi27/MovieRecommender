@@ -1,10 +1,5 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -21,28 +16,7 @@ public class Movie {
 	private String slug;
 	private String title;
 	private String poster_image_thumbnail;
-	private ShowtimesList showtimes = new ShowtimesList();
 	
-	private static List<Integer> nowPlayingMoviesId = new ArrayList<Integer>();
-	private static Map<Integer,Movie> movieMap = new HashMap<Integer,Movie>();
-	
-	
-
-	public ShowtimesList getAllTheatresShowtime() {
-		return showtimes;
-	}
-
-	public void setAllTheatresShowtime(ShowtimesList showtimes) {
-		this.showtimes = showtimes;
-	}
-
-	public static Map<Integer, Movie> getMovieMap() {
-		return movieMap;
-	}
-
-	public static void setMovieMap(Map<Integer, Movie> movieMap) {
-		Movie.movieMap = movieMap;
-	}
 
 	public int getId() {
 		return id;
@@ -50,8 +24,6 @@ public class Movie {
 
 	public void setId(int id) {
 		this.id = id;
-		nowPlayingMoviesId.add(id);
-		movieMap.put(id, this);
 	}
 
 	public String getPoster_image_thumbnail() {
@@ -78,7 +50,4 @@ public class Movie {
 		this.slug = slug;
 	}
 	
-	public static List<Integer> getNowPlayingMovies() {
-		return nowPlayingMoviesId;
-	}
 }

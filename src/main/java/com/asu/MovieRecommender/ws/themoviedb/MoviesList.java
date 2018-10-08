@@ -10,7 +10,6 @@ public class MoviesList implements Serializable {
 	private static final long serialVersionUID = -7788619177798333712L;
 	
 	private List<Movie> movies;
-	//private static HashMap
 
 	public List<Movie> getMovies() {
 		return movies;

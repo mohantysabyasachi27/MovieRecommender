@@ -2,16 +2,17 @@ package com.asu.MovieRecommender.Controllers;
 
 import java.util.Map;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.config.BasicConfiguration;
+import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 
 /**
@@ -45,8 +46,8 @@ public class MovieController {
 	 * @return JSONObject
 	 */
 	@RequestMapping(value="/api/getMovies",method = RequestMethod.GET, produces="application/json")
-	public JSONObject getListOfMovies() {
-		JSONObject listOfMovies = theMovieDBService.getNowPlayingMovies();
+	public ResponseEntity<MoviesList> getListOfMovies() {
+		ResponseEntity<MoviesList> listOfMovies = theMovieDBService.getNowPlayingMovies();
 		return listOfMovies;
 	}
 	

@@ -1,6 +1,7 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
 import org.json.simple.JSONObject;
+import org.springframework.http.ResponseEntity;
 
 /**
  * 
@@ -9,5 +10,5 @@ import org.json.simple.JSONObject;
  */
 
 public interface TheMovieDBService {
-	public JSONObject getNowPlayingMovies();
+	public ResponseEntity<MoviesList> getNowPlayingMovies();
 }
