@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
 import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.User.CustomUserDetails;
+
+import com.asu.MovieRecommender.User.Response;
+import com.asu.MovieRecommender.User.LogInUser;
+import com.asu.MovieRecommender.User.User;
+
+
 import com.asu.MovieRecommender.UserService.UserLoginService;
 
 @RestController

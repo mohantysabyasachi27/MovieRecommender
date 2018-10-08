@@ -16,6 +16,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
+
+import com.asu.MovieRecommender.Exceptions.UserNotFoundException;
+
 import com.asu.MovieRecommender.User.Response;
 import com.google.gson.Gson;
 
