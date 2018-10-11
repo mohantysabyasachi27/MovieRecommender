@@ -27,6 +27,7 @@ public class ProfileFetchService {
 			if (userDetails != null) {
 
 				if (isLogged(strUserName)) {
+					userDetails.setUserPassword(null);
 					return userDetails;
 				} else {
 					throw new FetchProfileException("User not logged in");

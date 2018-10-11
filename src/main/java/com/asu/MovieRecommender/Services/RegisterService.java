@@ -90,6 +90,9 @@ public class RegisterService {
 
 					}
 				} else {
+					if(!operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER))
+						 return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, "User Exists with same userName"),
+									 HttpStatus.CONFLICT);
 					if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)
 							&& ifUserExists(strUserName)) {
 						if (editUser(userDefine)) {
