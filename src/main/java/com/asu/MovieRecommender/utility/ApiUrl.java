@@ -2,6 +2,8 @@ package com.asu.MovieRecommender.utility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.asu.MovieRecommender.config.BasicConfiguration;
 
@@ -20,7 +22,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * @author Lehar Bhatt
  */
-
 public class ApiUrl {
 
     /*
@@ -31,11 +32,9 @@ public class ApiUrl {
 
     private final String baseUrl;
     
-    //Temporary
-    private String key = "791db8ffb108ed8cd809f256dca5bfbf";
+    @Value("${movie.pi.key}")
+    private String key;
     
-    @Autowired
-	private BasicConfiguration configuration;
     
     private final Map<String, String> params = new HashMap<String, String>();
 
