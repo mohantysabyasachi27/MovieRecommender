@@ -53,17 +53,4 @@ public class MovieController {
 		}
 		return listOfMovies;
 	}
-	
-	/* 
-	 * Get properties from application.properties
-	 * */
-	
-	@RequestMapping("/test")
-    public void welcome(Map<String, Object> model) {
-        String appProperties = config.toString();
-        System.out.println("config val = " + config.getKey());
-        System.out.println(appProperties);
-    }
-	
-	
 }
