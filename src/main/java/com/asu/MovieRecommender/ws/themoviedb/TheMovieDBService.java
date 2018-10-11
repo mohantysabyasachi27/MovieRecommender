@@ -1,13 +1,15 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
-import org.json.simple.JSONObject;
+import org.springframework.http.ResponseEntity;
+
+import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 
 /**
- * 
+ * Interface to get now playing movies
  * @author leharbhatt
  *
  */
 
 public interface TheMovieDBService {
-	public JSONObject getNowPlayingMovies();
+	public ResponseEntity<MoviesList> getNowPlayingMovies() throws MovieDetailsException;
 }
