@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * 
  * @author leharbhatt
- * JSONObject mapper to map themoviedb results to Java Object
+ * JSONObject mapper to map internationMovieAPI results to Java Object
  */
 
 

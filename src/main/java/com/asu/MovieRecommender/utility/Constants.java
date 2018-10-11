@@ -24,4 +24,7 @@ public class Constants {
 	public static final Object MOVIES = "/movies";
 	public static final Object SHOWTIMES = "/showtimes";
 	
+	/*Status Codes*/
+	public final static String STATUS_OK = "200";
+	
 }

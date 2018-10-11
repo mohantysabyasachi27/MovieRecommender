@@ -1,5 +1,10 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
+/**
+ * Maps the showtimes to JSON object.
+ * @author leharbhatt
+ *
+ */
 public class Showtimes {
 
 	private String cinema_id;
