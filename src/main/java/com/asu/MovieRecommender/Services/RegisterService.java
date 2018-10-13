@@ -1,11 +1,15 @@
 package com.asu.MovieRecommender.Services;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.*;
 
 import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
 import com.asu.MovieRecommender.DBServices.UserRepoCrud;
@@ -15,6 +19,7 @@ import com.asu.MovieRecommender.User.User;
 
 @Service
 public class RegisterService {
+	public static Logger logger = LogManager.getLogger(RegisterService.class);
 
 	@Autowired
 	private UserRepoCrud userRepo;
@@ -23,8 +28,6 @@ public class RegisterService {
 	private PasswordEncoder passwordEncoder;
 
 	public boolean ifUserExists(String userName) throws RegisterException {
-
-		// System.out.println(userRepo.findByUserName(userName).getUserName());
 		return (null != userRepo.findByUserName(userName));
 
 	}
@@ -62,16 +65,103 @@ public class RegisterService {
 
 	}
 
-	public ResponseEntity<Response> addUserAfterValidation(User userDefine, String operationType) {
+	private boolean validateUserRequest(Response response, User user, String operationType) {
+
+		if (StringUtils.isBlank(user.getUserName())) {
+			response.setStatusCode("100");
+			response.setSuccess(false);
+			response.setErrorReason("UserName is null or blank");
+			logger.info("UserName is null or blank");
+			return false;
+		}
+
+		if (StringUtils.isBlank(user.getUserPassword())
+				& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+			response.setStatusCode("101");
+			response.setSuccess(false);
+			response.setErrorReason("Password is null or blank");
+			logger.info("Password is null or blank");
+			return false;
+		}
+
+		if (ifContactNoExists(user.getUserContactNo())
+				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+			response.setStatusCode("102");
+			response.setSuccess(false);
+			response.setErrorReason("Contact Number already exists !");
+			logger.info("Contact Number already exists !");
+			return false;
+		}
+
+		if (ifEmailIdExists(user.getUserEmailId())
+				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+			response.setStatusCode("103");
+			response.setSuccess(false);
+			response.setErrorReason("Email Id is already registered !");
+			logger.info("Email Id is already registered !");
+			return false;
+		}
+
+		try {
+			if (ifUserExists(user.getUserName())
+					&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+				response.setStatusCode("104");
+				response.setSuccess(false);
+				response.setErrorReason("UserName is already registered !");
+				logger.info("UserName is already registered !");
+				return false;
+			}
+		} catch (RegisterException e) {
+			logger.error("Error while checking if the user Exists in the database ", e);
+			response.setStatusCode("500");
+			response.setSuccess(false);
+			response.setErrorReason("Internal Server Error!");
+			return false;
+		}
+
+		return true;
+	}
+
+	public ResponseEntity<Response> addUser(User user, String operationType) {
+		Response response = new Response();
+
+		if (!validateUserRequest(response, user, operationType)) {
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		}
+		try {
+
+			if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER) && addUser(user)) {
+				return new ResponseEntity<>(new Response(HttpStatus.OK.toString(), true, ""), HttpStatus.OK);
+			} else if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER) && editUser(user)) {
+				return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, ""), HttpStatus.OK);
+			}
+		} catch (RegisterException e) {
+			logger.error("Exception while checking User Exists in the database ", e);
+			response.setStatusCode("500");
+			response.setSuccess(false);
+			response.setErrorReason("Internal Server Error!");
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		}
+		
+		logger.info("Invalid Operation Type ");
+		response.setStatusCode("400");
+		response.setSuccess(false);
+		response.setErrorReason("Bad Request!");
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+
+	/*public ResponseEntity<Response> addUserAfterValidation(User userDefine, String operationType) {
+
 		String strUserName = userDefine.getUserName();
 		String strEmailId = userDefine.getUserEmailId();
 		String strContactNo = userDefine.getUserContactNo();
-		//ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		// ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
 		if (!StringUtils.isBlank(strUserName) && !StringUtils.isBlank(userDefine.getUserPassword())
 				&& !StringUtils.isBlank(strContactNo) && !StringUtils.isBlank(strEmailId)) {
 			try {
 				if (!ifUserExists(strUserName)
 						&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+					logger.info("Adding New User");
 					if (!ifContactNoExists(strContactNo)) {
 						if (!ifEmailIdExists(strEmailId)) {
 							if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
@@ -90,9 +180,15 @@ public class RegisterService {
 
 					}
 				} else {
-					if(!operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER))
-						 return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, "User Exists with same userName"),
-									 HttpStatus.CONFLICT);
+
+					logger.info("Editing Existing User");
+					if (!operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)) {
+						logger.info("Editing Existing User");
+						return new ResponseEntity<Response>(
+								new Response(HttpStatus.OK.toString(), true, "User Exists with same userName"),
+								HttpStatus.CONFLICT);
+					}
+
 					if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)
 							&& ifUserExists(strUserName)) {
 						if (editUser(userDefine)) {
@@ -129,6 +225,6 @@ public class RegisterService {
 
 		}
 		return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, ""), HttpStatus.OK);
-	}
+	}*/
 
 }
