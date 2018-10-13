@@ -16,6 +16,8 @@ public class Response {
 		this.errorReason = errorReason;
 	}
 
+	public Response() {}
+	
 	public String getStatusCode() {
 		return statusCode;
 	}
