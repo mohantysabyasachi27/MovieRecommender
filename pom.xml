@@ -46,8 +46,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.security.oauth.boot</groupId>
 			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
@@ -108,21 +119,18 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>com.googlecode.json-simple</groupId>
-		    <artifactId>json-simple</artifactId>
-   		</dependency>
-   		<dependency>
-		  	<groupId>com.google.code.gson</groupId>
-		  	<artifactId>gson</artifactId>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
-	<!-- 	<dependency>
-			 <groupId>org.json</groupId>
-			 <artifactId>json</artifactId>
-			 <version>20180813</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.json</groupId> <artifactId>json</artifactId> 
+			<version>20180813</version> </dependency> -->
 	</dependencies>
 
 	<build>
@@ -131,30 +139,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<!-- 
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<configuration>
-					<repository>smohan31/MovieRecommender</repository>
-					<tag>${project.version}</tag>
-					<buildArgs>
-						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>default</id>
-						<phase>install</phase>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
-			
+			<!-- <plugin> <groupId>com.spotify</groupId> <artifactId>dockerfile-maven-plugin</artifactId> 
+				<version>1.4.0</version> <configuration> <repository>smohan31/MovieRecommender</repository> 
+				<tag>${project.version}</tag> <buildArgs> <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE> 
+				</buildArgs> </configuration> <executions> <execution> <id>default</id> <phase>install</phase> 
+				<goals> <goal>build</goal> <goal>push</goal> </goals> </execution> </executions> 
+				</plugin> -->
+
 		</plugins>
 	</build>
 
