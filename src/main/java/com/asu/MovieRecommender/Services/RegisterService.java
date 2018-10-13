@@ -155,8 +155,8 @@ public class RegisterService {
 		String strUserName = userDefine.getUserName();
 		String strEmailId = userDefine.getUserEmailId();
 		String strContactNo = userDefine.getUserContactNo();
-		// ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
-		if (!StringUtils.isBlank(strUserName) && !StringUtils.isBlank(userDefine.getUserPassword())
+		//ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+		if (!StringUtils.isBlank(strUserName) 
 				&& !StringUtils.isBlank(strContactNo) && !StringUtils.isBlank(strEmailId)) {
 			try {
 				if (!ifUserExists(strUserName)

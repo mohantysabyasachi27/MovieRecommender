@@ -1,5 +1,6 @@
 package com.asu.MovieRecommender.User;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class User {
 	private String userPassword;
 	private String userEmailId;
 	private String userContactNo;
-	private String userDOB;
+	private Date userDOB;
 	private String userCity;
 	private String userAddress;
 	private String userPinCode;
@@ -43,7 +44,7 @@ public class User {
 	}
 
 	public User(String firstName, String lastName, String userName, String userPassword, String userEmailId,
-			String userContactNo, String userDOB, String userCity, String userAddress, String userPinCode) {
+			String userContactNo, Date userDOB, String userCity, String userAddress, String userPinCode) {
 		super();
 		this.roles.add(new Role(MovieRecommenderConstants.DEFAULT_ROLE_ID, userName));
 		this.firstName = firstName;
@@ -98,11 +99,11 @@ public class User {
 		this.userContactNo = userContactNo;
 	}
 
-	public String getUserDOB() {
+	public Date getUserDOB() {
 		return userDOB;
 	}
 
-	public void setUserDOB(String userDOB) {
+	public void setUserDOB(Date userDOB) {
 		this.userDOB = userDOB;
 	}
 
@@ -158,19 +159,5 @@ public class User {
 		this.roles = roles;
 	}
 
-	public static void main(String... args) throws JsonProcessingException {
-		User u = new User();
-		u.setFirstName("Sunny");
-		u.setLastName("Mohanty");
-		u.setUserName("test");
-		u.setUserPassword("test");
-		u.setUserDOB("19920427");
-		u.setUserEmailId("smohan31@asu.edu");
-		u.setUserContactNo("4806166215");
-		ObjectMapper map = new ObjectMapper();
-		String value = map.writeValueAsString(u);
-		System.out.println(value);
-		// {"id":null,"firstName":"Sunny","lastName":"Mohanty","roles":null,"userName":"test","userPassword":"test","userEmailId":"smohan31@asu.edu","userContactNo":"4806166215","userDOB":"19920427","userCity":null,"userAddress":null,"userPinCode":null}
 
-	}
 }
