@@ -46,7 +46,9 @@ public class RegisterService {
 	public boolean editUser(User userDefine) throws RegisterException {
 
 		try {
-			userDefine.setId(userRepo.findByUserName(userDefine.getUserName()).getId());
+			User oldEntry =userRepo.findByUserName(userDefine.getUserName());
+			userDefine.setId(oldEntry.getId());
+			userDefine.setUserPassword(oldEntry.getUserPassword());
 			userRepo.save(userDefine);
 			return true;
 		} catch (Exception ex) {
