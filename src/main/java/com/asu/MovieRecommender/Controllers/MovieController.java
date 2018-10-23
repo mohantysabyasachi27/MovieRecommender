@@ -7,16 +7,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.MovieRecommenderApplication;
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 import com.asu.MovieRecommender.config.BasicConfiguration;
 import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
+import com.asu.MovieRecommender.ws.themoviedb.ShowtimesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 
 /**
@@ -60,5 +63,19 @@ public class MovieController {
 					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
 		}
 		return listOfMovies;
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
+	public ResponseEntity<ShowtimesList> getMovieShowtime(@RequestParam("movieId") String movieId) {
+		ResponseEntity<ShowtimesList> listOfShowtimes = null;
+		try {
+			listOfShowtimes = theMovieDBService.getMovieShowtimes(movieId);
+		} catch (MovieDetailsException exception) {
+			logger.error(exception.getErrorMessage(), exception);
+			return new ResponseEntity<ShowtimesList>(
+					new ShowtimesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+		}
+		return listOfShowtimes;
 	}
 }

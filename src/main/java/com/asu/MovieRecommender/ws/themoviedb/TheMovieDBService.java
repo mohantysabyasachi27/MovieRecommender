@@ -12,4 +12,6 @@ import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 
 public interface TheMovieDBService {
 	public ResponseEntity<MoviesList> getNowPlayingMovies() throws MovieDetailsException;
+
+	public ResponseEntity<ShowtimesList> getMovieShowtimes(String movieId) throws MovieDetailsException;
 }
