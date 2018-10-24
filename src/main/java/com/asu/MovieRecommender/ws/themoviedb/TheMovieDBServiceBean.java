@@ -49,4 +49,23 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		}
 		return new ResponseEntity<MoviesList>(response, HttpStatus.OK);
 	}
+
+	@Override
+	public ResponseEntity<ShowtimesList> getMovieShowtimes(String movieId) throws MovieDetailsException {
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.SHOWTIMES);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.API_KEY_STRING, Constants.API_KEY_STRING_VALUE);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.MOVIE_ID, movieId );
+
+		ShowtimesList response = null;
+		try {
+			response = restTemplate.getForObject(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), ShowtimesList.class);
+			response.setStatusCode(Constants.STATUS_OK);
+			response.setSuccess(true);
+		} catch (Exception exception) {
+			throw new MovieDetailsException(exception.getMessage());
+
+		}
+		return new ResponseEntity<ShowtimesList>(response, HttpStatus.OK);
+	}
 }
