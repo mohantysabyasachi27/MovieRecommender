@@ -1,7 +1,6 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
 import org.springframework.http.ResponseEntity;
-
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 
 /**
@@ -14,4 +13,8 @@ public interface TheMovieDBService {
 	public ResponseEntity<MoviesList> getNowPlayingMovies() throws MovieDetailsException;
 
 	public ResponseEntity<ShowtimesList> getMovieShowtimes(String movieId) throws MovieDetailsException;
+
+	ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException;
+
+	ResponseEntity<TrailersJSON> getNowPlayingMoviesTrailers() throws MovieDetailsException;
 }

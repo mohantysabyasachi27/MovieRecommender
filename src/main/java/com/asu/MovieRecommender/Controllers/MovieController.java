@@ -17,6 +17,7 @@ import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
 import com.asu.MovieRecommender.ws.themoviedb.ShowtimesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
+import com.asu.MovieRecommender.ws.themoviedb.TrailersJSON;
 
 /**
  * 
@@ -42,7 +43,7 @@ public class MovieController {
 	public ResponseEntity<MoviesList> getListOfMovies() {
 		ResponseEntity<MoviesList> listOfMovies = null;
 		try {
-			listOfMovies = theMovieDBService.getNowPlayingMovies();
+			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB();
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<MoviesList>(
@@ -53,10 +54,10 @@ public class MovieController {
 	
 	@PostMapping
 	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
-	public ResponseEntity<ShowtimesList> getMovieShowtime(@RequestParam("movieId") String movieId) {
+	public ResponseEntity<ShowtimesList> getMovieShowtime(@RequestParam("movieName") String movieName) {
 		ResponseEntity<ShowtimesList> listOfShowtimes = null;
 		try {
-			listOfShowtimes = theMovieDBService.getMovieShowtimes(movieId);
+			listOfShowtimes = theMovieDBService.getMovieShowtimes(movieName);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<ShowtimesList>(
@@ -65,16 +66,15 @@ public class MovieController {
 		return listOfShowtimes;
 	}
 	
-//	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
-//	public ResponseEntity<TrailersList> getMovieTrailers() {
-//		ResponseEntity<TrailersList> listOfTrailers = null;
-		//try {
-		//	listOfTrailers = theMovieDBService.getMovieTrailers();
-		//} catch (MovieDetailsException exception) {
-	//		logger.error(exception.getErrorMessage(), exception);
-		//	return new ResponseEntity<TrailersList>(
-	//				new TrailersList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
-	//	}
-	//	return listOfTrailers;
-	//}
+	@RequestMapping(value = "/api/getTrailers", produces = "application/json")
+	public ResponseEntity<TrailersJSON> getMovieTrailers() {
+		ResponseEntity<TrailersJSON> listOfTrailers = null;
+		try {
+			listOfTrailers = theMovieDBService.getNowPlayingMoviesTrailers();
+		} catch (MovieDetailsException exception) {
+			logger.error(exception.getErrorMessage(), exception);
+			
+		}
+		return listOfTrailers;
+	}
 }

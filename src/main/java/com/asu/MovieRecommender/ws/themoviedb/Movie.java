@@ -1,6 +1,6 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
@@ -10,11 +10,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 
 
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"movieMap","nowPlayingMoviesId"})
 public class Movie {
 	private int id;
-	private String slug;
 	private String title;
+	@JsonProperty("poster_path")
 	private String poster_image_thumbnail;
 	
 
@@ -31,7 +30,7 @@ public class Movie {
 	}
 
 	public void setPoster_image_thumbnail(String poster_image_thumbnail) {
-		this.poster_image_thumbnail = poster_image_thumbnail;
+		this.poster_image_thumbnail = "http://image.tmdb.org/t/p/w154"+poster_image_thumbnail;
 	}
 
 	public String getTitle() {
@@ -41,13 +40,4 @@ public class Movie {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
-	public String getSlug() {
-		return slug;
-	}
-
-	public void setSlug(String slug) {
-		this.slug = slug;
-	}
-	
 }

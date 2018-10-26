@@ -1,5 +1,6 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	@Value("${movie.api.key}")
 	private String apiKeyValue;
 
+	@Value("${moviedb.api.key}")
+	private String apiKeyValueTheMovieDB;
+
 	private final RestTemplate restTemplate;
 
 	public TheMovieDBServiceBean(RestTemplateBuilder restTemplateBuilder) {
@@ -45,7 +49,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.MOVIES);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.MOVIES);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_CINEMA_ID, Constants.PARAM_CINEMA_ID_VALUE);
 
 		ResponseEntity<MoviesList> response = null;
@@ -54,16 +58,15 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
 					MoviesList.class);
-			//if(response != null || response.getBody())
 			listOfMovies = response.getBody();
 			listOfMovies.setStatusCode(Constants.STATUS_OK);
 			listOfMovies.setSuccess(true);
-			List<Movie> movieList = listOfMovies.getMovies();
-			for(int i=0; i<movieList.size();i++) {
-				if(movieList.get(i).getPoster_image_thumbnail() == null) {
-					listOfMovies.getMovies().remove(i);
+			List<Movie> movieList = listOfMovies.getResults();
+			for (int i = 0; i < movieList.size(); i++) {
+				if (movieList.get(i).getPoster_image_thumbnail() == null) {
+					listOfMovies.getResults().remove(i);
 				}
-					
+
 			}
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
@@ -72,20 +75,50 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	}
 
 	@Override
-	public ResponseEntity<ShowtimesList> getMovieShowtimes(String movieId) throws MovieDetailsException {
-		
+	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException {
+
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.NOWPLAYING);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+		ResponseEntity<MoviesList> response = null;
+		MoviesList listOfMovies = null;
+
+		try {
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
+					MoviesList.class);
+			listOfMovies = response.getBody();
+			listOfMovies.setStatusCode(Constants.STATUS_OK);
+			listOfMovies.setSuccess(true);
+			List<Movie> movieList = listOfMovies.getResults();
+			for (int i = 0; i < movieList.size(); i++) {
+				if (movieList.get(i).getPoster_image_thumbnail() == null) {
+					listOfMovies.getResults().remove(i);
+				}
+
+			}
+		} catch (Exception exception) {
+			throw new MovieDetailsException(exception.getMessage());
+		}
+		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<ShowtimesList> getMovieShowtimes(String movieName) throws MovieDetailsException {
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
-		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.SHOWTIMES);
+		HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.SHOWTIMES);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
-		apiUrlToGetNowPlayingMovies.addParam(Constants.MOVIE_ID, movieId);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_QUERY, movieName);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_FIELD, Constants.CINEMA_MOVIE_TITLE);
 
 		ResponseEntity<ShowtimesList> response = null;
 		ShowtimesList listOfShowtimes = null;
-		
+
 		try {
-			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(),HttpMethod.GET, entity,
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
 					ShowtimesList.class);
 			listOfShowtimes = response.getBody();
 			listOfShowtimes.setStatusCode(Constants.STATUS_OK);
@@ -95,5 +128,39 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		}
 		return new ResponseEntity<ShowtimesList>(listOfShowtimes, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<TrailersJSON> getNowPlayingMoviesTrailers() throws MovieDetailsException {
+		List<TrailersList> list = new ArrayList<TrailersList>();
+		ResponseEntity<TrailersList> response = null;
+		TrailersList listOfTrailers = null;
+		MoviesList nowPlayingMovies = getNowPlayingMoviesTheMovieDB().getBody();
+		TrailersJSON trailersJSON = new TrailersJSON();
+
+		for (Movie movie : nowPlayingMovies.getResults()) {
+			int id = movie.getId();
+			HttpHeaders headers = new HttpHeaders();
+			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, id, Constants.VIDEOS);
+			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+
+			try {
+				response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
+						TrailersList.class);
+				listOfTrailers = response.getBody();
+				int size = listOfTrailers.getResults().size();
+				if (size >= 1)
+					listOfTrailers.getResults().subList(1, size).clear();
+				if (listOfTrailers != null)
+					list.add(listOfTrailers);
+
+			} catch (Exception exception) {
+				throw new MovieDetailsException(exception.getMessage());
+			}
+
+		}
+		trailersJSON.setList(list);
+		return new ResponseEntity<TrailersJSON>(trailersJSON, HttpStatus.OK);
 	}
 }

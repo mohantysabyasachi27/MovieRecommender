@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class MoviesList implements Serializable {
 	private static final long serialVersionUID = -7788619177798333712L;
 	
-	private List<Movie> movies;
+	private List<Movie> results;
 	private String statusCode ;
 	private boolean success;
 	private String errorReason;
@@ -28,14 +28,6 @@ public class MoviesList implements Serializable {
 		this.statusCode = statusCode;
 		this.success = success;
 		this.errorReason = errorReason;
-	}
-
-	public List<Movie> getMovies() {
-		return movies;
-	}
-
-	public void setMovies(List<Movie> movies) {
-		this.movies = movies;
 	}
 	
 	public String getStatusCode() {
@@ -60,6 +52,14 @@ public class MoviesList implements Serializable {
 
 	public void setErrorReason(String errorReason) {
 		this.errorReason = errorReason;
+	}
+
+	public List<Movie> getResults() {
+		return results;
+	}
+
+	public void setResults(List<Movie> results) {
+		this.results = results;
 	}
 	
 }

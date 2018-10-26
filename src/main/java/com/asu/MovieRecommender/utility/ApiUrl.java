@@ -32,14 +32,10 @@ public class ApiUrl {
 
     private final String baseUrl;
     
-    @Value("${movie.pi.key}")
-    private String key;
-    
-    
     private final Map<String, String> params = new HashMap<String, String>();
 
-    public ApiUrl(Object... urlElements) {
-        StringBuilder baseUrlBuilder = new StringBuilder(Constants.URL);
+    public ApiUrl(String url, Object... urlElements) {
+        StringBuilder baseUrlBuilder = new StringBuilder(url);
 
         for (int i = 0; i < urlElements.length; i++) {
             baseUrlBuilder.append(urlElements[i]);
@@ -150,11 +146,4 @@ public class ApiUrl {
         }
     }
     
-    public void addkey() {
-    	System.out.println(key);
-    	if (isNotBlank(key)) {
-            //addParam(Constants.PARAM_API_KEY, configuration.getKey());
-    		addParam(Constants.PARAM_API_KEY, key);
-        }
-    }
 }
