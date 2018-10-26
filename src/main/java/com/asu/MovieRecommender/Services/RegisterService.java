@@ -86,12 +86,30 @@ public class RegisterService {
 			return false;
 		}
 
-		if (ifContactNoExists(user.getUserContactNo())
+		if (ifContactNoExists(user.getUserContactNo() )
 				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 			response.setStatusCode("102");
 			response.setSuccess(false);
 			response.setErrorReason("Contact Number already exists !");
 			logger.info("Contact Number already exists !");
+			return false;
+		}
+		
+		if (StringUtils.isBlank(user.getUserContactNo() )
+				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+			response.setStatusCode("102");
+			response.setSuccess(false);
+			response.setErrorReason("Contact Number is null or blank !");
+			logger.info("Contact Number is null or blank !");
+			return false;
+		}
+		
+		if (StringUtils.isBlank(user.getUserEmailId() )
+				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+			response.setStatusCode("103");
+			response.setSuccess(false);
+			response.setErrorReason("Email id is null or blank !");
+			logger.info("Email id is null or blank !");
 			return false;
 		}
 
@@ -125,7 +143,7 @@ public class RegisterService {
 	}
 
 	public ResponseEntity<Response> addUser(User user, String operationType) {
-		Response response = new Response();
+		Response response = new Response(operationType, false, operationType);
 
 		if (!validateUserRequest(response, user, operationType)) {
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
