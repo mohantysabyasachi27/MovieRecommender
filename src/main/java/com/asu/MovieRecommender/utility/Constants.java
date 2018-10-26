@@ -17,7 +17,6 @@ public class Constants {
 	public static final String PARAM_CINEMA_ID = "cinema_id";
 	public static final String PARAM_CINEMA_ID_VALUE = "40849";
 	public static final String API_KEY_STRING = "apikey";
-	public static final String API_KEY_STRING_VALUE = "yuUdRKK7dyGG1bjABTFDSbHjV07MERxZ";
 	public static final String CITY_ID = "city_ids";
 	public static final String MOVIE_ID = "movie_id";
 	public static final String TEMPE = "1901";

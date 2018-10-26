@@ -1,11 +1,8 @@
 package com.asu.MovieRecommender.Controllers;
 
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpStatus;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.MovieRecommenderApplication;
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
-import com.asu.MovieRecommender.config.BasicConfiguration;
 import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
 import com.asu.MovieRecommender.ws.themoviedb.ShowtimesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
@@ -33,16 +29,6 @@ import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 public class MovieController {
 
 	public static Logger logger = LogManager.getLogger(MovieRecommenderApplication.class);
-	
-	@Value("${movie.api.key}")
-	private String val;
-
-	private BasicConfiguration config;
-
-	@Autowired
-	public void setApp(BasicConfiguration config) {
-		this.config = config;
-	}
 
 	@Autowired
 	private TheMovieDBService theMovieDBService;
@@ -60,7 +46,7 @@ public class MovieController {
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<MoviesList>(
-					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
 		}
 		return listOfMovies;
 	}
@@ -74,8 +60,21 @@ public class MovieController {
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<ShowtimesList>(
-					new ShowtimesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+					new ShowtimesList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
 		}
 		return listOfShowtimes;
 	}
+	
+//	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
+//	public ResponseEntity<TrailersList> getMovieTrailers() {
+//		ResponseEntity<TrailersList> listOfTrailers = null;
+		//try {
+		//	listOfTrailers = theMovieDBService.getMovieTrailers();
+		//} catch (MovieDetailsException exception) {
+	//		logger.error(exception.getErrorMessage(), exception);
+		//	return new ResponseEntity<TrailersList>(
+	//				new TrailersList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+	//	}
+	//	return listOfTrailers;
+	//}
 }
