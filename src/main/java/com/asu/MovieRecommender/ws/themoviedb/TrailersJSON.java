@@ -2,6 +2,9 @@ package com.asu.MovieRecommender.ws.themoviedb;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(value= {"statusCode","success","errorReason"},allowSetters = true)
 public class TrailersJSON {
 	
 	private String statusCode ;

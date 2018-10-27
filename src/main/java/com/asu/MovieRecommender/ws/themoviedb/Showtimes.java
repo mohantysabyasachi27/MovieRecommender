@@ -8,7 +8,6 @@ package com.asu.MovieRecommender.ws.themoviedb;
 public class Showtimes {
 
 	private String cinema_id;
-	private String cinema_name;
 	private int movie_id;
 	private String start_at;
 	private boolean is_3d;

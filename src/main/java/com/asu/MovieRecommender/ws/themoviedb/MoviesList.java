@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Maps the movie list to the JSON object
+ * 
  * @author leharbhatt
  *
  */
@@ -18,18 +19,16 @@ public class MoviesList implements Serializable {
 	private String statusCode ;
 	private boolean success;
 	private String errorReason;
-	
+
 	public MoviesList() {
-		
 	}
-	
+
 	public MoviesList(String statusCode, boolean success, String errorReason) {
 		super();
 		this.statusCode = statusCode;
 		this.success = success;
 		this.errorReason = errorReason;
 	}
-	
 	public String getStatusCode() {
 		return statusCode;
 	}
@@ -61,5 +60,9 @@ public class MoviesList implements Serializable {
 	public void setResults(List<Movie> results) {
 		this.results = results;
 	}
-	
+	@Override
+	public String toString() {
+		return "MoviesList [results=" + results + ", statusCode=" + statusCode + ", success=" + success + ", errorReason="
+				+ errorReason + "]";
+	}
 }

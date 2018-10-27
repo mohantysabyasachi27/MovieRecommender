@@ -1,6 +1,6 @@
 package com.asu.MovieRecommender.Services;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.Exceptions.ChangePasswordException;
 import com.asu.MovieRecommender.User.User;
-
-import io.netty.util.internal.StringUtil;
 
 @Service
 public class ChangePasswordService {
