@@ -51,7 +51,7 @@ public class Movie {
 
 	@Override
 	public String toString() {
-		return "Movie [id=" + id  + ", title=" + title + ", poster_image_thumbnail="
-				+ poster_image_thumbnail + "]";
+		return "Movie [id=" + this.id  + ", title=" + this.title + ", poster_image_thumbnail="
+				+ this.poster_image_thumbnail + "]";
 	}
 }

@@ -81,6 +81,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException {
 		ResponseEntity<MoviesList> response = null;
 		MoviesList listOfMovies = null;
+		List<Movie> movieList  = null;
 		try {
             ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.NOWPLAYING);
     		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
@@ -92,13 +93,13 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
             listOfMovies = response.getBody();
 			listOfMovies.setStatusCode(Constants.STATUS_OK);
 			listOfMovies.setSuccess(true);
-			List<Movie> movieList = listOfMovies.getResults();
+			movieList = listOfMovies.getResults();
 			for (int i = 0; i < movieList.size(); i++) {
 				if (movieList.get(i).getPoster_image_thumbnail() == null) {
 					listOfMovies.getResults().remove(i);
 				}
 			}
-            logger.info("Got the list of ",response.getBody().getResults().toString());
+            logger.info("Got the list of ",listOfMovies);
         } catch (Exception exception) {
         	throw new MovieDetailsException(exception.getMessage());
         }
@@ -127,6 +128,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			listOfShowtimes = response.getBody();
 			listOfShowtimes.setStatusCode(Constants.STATUS_OK);
 			listOfShowtimes.setSuccess(true);
+			logger.info("Got the list of ",listOfShowtimes);
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 
@@ -161,6 +163,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				if (listOfTrailers.getResults() != null) {
 					list.add(listOfTrailers);
 				}
+				logger.info("Got the list of ",listOfTrailers);
 
 			} catch (Exception exception) {
 				throw new MovieDetailsException(exception.getMessage());
