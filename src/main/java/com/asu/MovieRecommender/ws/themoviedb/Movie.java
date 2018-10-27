@@ -14,6 +14,7 @@ public class Movie {
 	private String title;
 	@JsonProperty("poster_path")
 	private String poster_image_thumbnail;
+	private String overview;
 
 	public Movie() {
 	}
@@ -53,5 +54,13 @@ public class Movie {
 	public String toString() {
 		return "Movie [id=" + this.id  + ", title=" + this.title + ", poster_image_thumbnail="
 				+ this.poster_image_thumbnail + "]";
+	}
+
+	public String getOverview() {
+		return overview;
+	}
+
+	public void setOverview(String overview) {
+		this.overview = overview;
 	}
 }
