@@ -3,14 +3,9 @@
  */
 package com.asu.MovieRecommender.Controllers;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +21,6 @@ import com.asu.MovieRecommender.Services.ProfileFetchService;
 import com.asu.MovieRecommender.User.ChangePassword;
 import com.asu.MovieRecommender.User.Response;
 import com.asu.MovieRecommender.User.User;
-
-import io.netty.channel.ChannelPromiseAggregator;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")

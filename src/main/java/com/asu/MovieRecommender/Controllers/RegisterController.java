@@ -25,10 +25,11 @@ public class RegisterController {
 	RegisterService registerService;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/register/user/{operationType}")
-	public @ResponseBody ResponseEntity<Response> register(@RequestBody User userDefine,@PathVariable String operationType) {
+	public @ResponseBody ResponseEntity<Response> register(@RequestBody String userDefine,@PathVariable String operationType) {
 		
-		logger.info("Entering the Register User Method");
-	      return registerService.addUser(userDefine,operationType);
+		logger.info("Entering the Register User Method", userDefine);
+	     // return registerService.addUser(userDefine,operationType);
+		return null;
 
 	}	 
 
