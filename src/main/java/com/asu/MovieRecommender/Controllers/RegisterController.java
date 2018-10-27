@@ -27,9 +27,8 @@ public class RegisterController {
 	@RequestMapping(method = RequestMethod.POST, value = "/register/user/{operationType}")
 	public @ResponseBody ResponseEntity<Response> register(@RequestBody User userDefine,@PathVariable String operationType) {
 		
-		logger.info("Entering the Register User Method");
-	      return registerService.addUser(userDefine,operationType);
-
+		logger.info("Entering the Register User Method", userDefine);
+	        return registerService.addUser(userDefine,operationType);
 	}	 
 
 	

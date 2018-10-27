@@ -1,11 +1,5 @@
 package com.asu.MovieRecommender.utility;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.asu.MovieRecommender.config.BasicConfiguration;
 
 import java.net.URL;
 import java.net.URLEncoder;
@@ -14,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 
 /**
@@ -52,6 +47,29 @@ public class ApiUrl {
         baseUrl = baseUrlBuilder.toString();
     }
 
+    
+    public String buildUrlString() {
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+
+        try {
+
+            if (params.size() > 0) {
+                List<String> keys = new ArrayList<String>(params.keySet());
+                for (int i = 0; i < keys.size(); i++) {
+                    urlBuilder.append(i == 0 ? "?" : "&");
+                    String paramName = keys.get(i);
+
+                    urlBuilder.append(paramName).append("=");
+                    urlBuilder.append(URLEncoder.encode(params.get(paramName), "UTF-8"));
+                }
+            }
+            return urlBuilder.toString();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        
+    }
+    
 
     public URL buildUrl() {
         StringBuilder urlBuilder = new StringBuilder(baseUrl);
@@ -145,14 +163,14 @@ public class ApiUrl {
 
 
     public void addLanguage(String language) {
-        if (isNotBlank(language)) {
+        if (StringUtils.isNotBlank(language)) {
             addParam(Constants.PARAM_LANGUAGE, language);
         }
     }
     
     public void addkey() {
     	System.out.println(key);
-    	if (isNotBlank(key)) {
+    	if (StringUtils.isNotBlank(key)) {
             //addParam(Constants.PARAM_API_KEY, configuration.getKey());
     		addParam(Constants.PARAM_API_KEY, key);
         }
