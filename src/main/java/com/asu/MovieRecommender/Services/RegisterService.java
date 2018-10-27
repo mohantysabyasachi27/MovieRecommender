@@ -1,6 +1,13 @@
 package com.asu.MovieRecommender.Services;
 
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,7 +68,7 @@ public class RegisterService {
 	public boolean editUser(User userDefine) throws RegisterException {
 
 		try {
-			User oldEntry =userRepo.findByUserName(userDefine.getUserName());
+			User oldEntry = userRepo.findByUserName(userDefine.getUserName());
 			userDefine.setId(oldEntry.getId());
 			userDefine.setUserPassword(oldEntry.getUserPassword());
 			userRepo.save(userDefine);
@@ -101,7 +108,7 @@ public class RegisterService {
 			return false;
 		}
 
-		if (ifContactNoExists(user.getUserContactNo() )
+		if (ifContactNoExists(user.getUserContactNo())
 				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 			response.setStatusCode("102");
 			response.setSuccess(false);
@@ -109,8 +116,8 @@ public class RegisterService {
 			logger.info("Contact Number already exists !");
 			return false;
 		}
-		
-		if (StringUtils.isBlank(user.getUserContactNo() )
+
+		if (StringUtils.isBlank(user.getUserContactNo())
 				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 			response.setStatusCode("102");
 			response.setSuccess(false);
@@ -118,8 +125,8 @@ public class RegisterService {
 			logger.info("Contact Number is null or blank !");
 			return false;
 		}
-		
-		if (StringUtils.isBlank(user.getUserEmailId() )
+
+		if (StringUtils.isBlank(user.getUserEmailId())
 				&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
 			response.setStatusCode("103");
 			response.setSuccess(false);
@@ -144,6 +151,20 @@ public class RegisterService {
 				response.setSuccess(false);
 				response.setErrorReason("UserName is already registered !");
 				logger.info("UserName is already registered !");
+				return false;
+			}
+
+			LocalDate dateOfBirth = user.getUserDOB().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			Date input = new Date();
+			Instant instant = input.toInstant();
+			ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+			LocalDate date = zdt.toLocalDate();
+			int age = Period.between(dateOfBirth, date).getYears();
+			if (age < 10) {
+				response.setStatusCode("105");
+				response.setSuccess(false);
+				response.setErrorReason("Not a valid age");
+				logger.info("Not a valid age!");
 				return false;
 			}
 		} catch (RegisterException e) {
@@ -177,7 +198,7 @@ public class RegisterService {
 			response.setErrorReason("Internal Server Error!");
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
-		
+
 		logger.info("Invalid Operation Type ");
 		response.setStatusCode("400");
 		response.setSuccess(false);
@@ -190,81 +211,67 @@ public class RegisterService {
 	
 	
 
-	/*public ResponseEntity<Response> addUserAfterValidation(User userDefine, String operationType) {
-
-		String strUserName = userDefine.getUserName();
-		String strEmailId = userDefine.getUserEmailId();
-		String strContactNo = userDefine.getUserContactNo();
-		//ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
-		if (!StringUtils.isBlank(strUserName) 
-				&& !StringUtils.isBlank(strContactNo) && !StringUtils.isBlank(strEmailId)) {
-			try {
-				if (!ifUserExists(strUserName)
-						&& operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
-					logger.info("Adding New User");
-					if (!ifContactNoExists(strContactNo)) {
-						if (!ifEmailIdExists(strEmailId)) {
-							if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
-								if (addUser(userDefine)) {
-									return new ResponseEntity<>(new Response(HttpStatus.OK.toString(), true, ""),
-											HttpStatus.OK);
-								}
-							}
-						} else {
-							return new ResponseEntity<Response>(new Response(HttpStatus.CONFLICT.toString(), false,
-									"User with same EmailId Exists"), HttpStatus.OK);
-						}
-					} else {
-						return new ResponseEntity<Response>(new Response(HttpStatus.CONFLICT.toString(), false,
-								"User with same contact number already exists"), HttpStatus.OK);
-
-					}
-				} else {
-
-					logger.info("Editing Existing User");
-					if (!operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)) {
-						logger.info("Editing Existing User");
-						return new ResponseEntity<Response>(
-								new Response(HttpStatus.OK.toString(), true, "User Exists with same userName"),
-								HttpStatus.CONFLICT);
-					}
-
-					if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)
-							&& ifUserExists(strUserName)) {
-						if (editUser(userDefine)) {
-
-							return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, ""),
-									HttpStatus.OK);
-
-						}
-					} else {
-						return new ResponseEntity<Response>(
-								new Response(HttpStatus.BAD_REQUEST.toString(), false, "User doesnot exist"),
-								HttpStatus.OK);
-					}
-
-					return new ResponseEntity<Response>(
-							new Response(HttpStatus.CONFLICT.toString(), false, "User Exists with same userName"),
-							HttpStatus.OK);
-					// return new ResponseEntity<>("User Exists with same userName",
-					// HttpStatus.CONFLICT);
-
-				}
-			} catch (RegisterException e) {
-
-				return new ResponseEntity<Response>(new Response(HttpStatus.INTERNAL_SERVER_ERROR.toString(), false,
-						"Something went wrong , Contact administrator"), HttpStatus.OK);
-				// return new ResponseEntity<>(e.getErrorMessage(),
-				// HttpStatus.INTERNAL_SERVER_ERROR);
-
-			}
-
-		} else {
-			return new ResponseEntity<Response>(
-					new Response(HttpStatus.BAD_REQUEST.toString(), false, "User doesnot exist"), HttpStatus.OK);
-
-		}
-		return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(), true, ""), HttpStatus.OK);
-	}*/
+	/*
+	 * public ResponseEntity<Response> addUserAfterValidation(User userDefine,
+	 * String operationType) {
+	 * 
+	 * String strUserName = userDefine.getUserName(); String strEmailId =
+	 * userDefine.getUserEmailId(); String strContactNo =
+	 * userDefine.getUserContactNo(); //ResponseEntity<String> response = new
+	 * ResponseEntity<>(HttpStatus.OK); if (!StringUtils.isBlank(strUserName) &&
+	 * !StringUtils.isBlank(strContactNo) && !StringUtils.isBlank(strEmailId)) { try
+	 * { if (!ifUserExists(strUserName) &&
+	 * operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+	 * logger.info("Adding New User"); if (!ifContactNoExists(strContactNo)) { if
+	 * (!ifEmailIdExists(strEmailId)) { if
+	 * (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_NEW_USER)) {
+	 * if (addUser(userDefine)) { return new ResponseEntity<>(new
+	 * Response(HttpStatus.OK.toString(), true, ""), HttpStatus.OK); } } } else {
+	 * return new ResponseEntity<Response>(new
+	 * Response(HttpStatus.CONFLICT.toString(), false,
+	 * "User with same EmailId Exists"), HttpStatus.OK); } } else { return new
+	 * ResponseEntity<Response>(new Response(HttpStatus.CONFLICT.toString(), false,
+	 * "User with same contact number already exists"), HttpStatus.OK);
+	 * 
+	 * } } else {
+	 * 
+	 * logger.info("Editing Existing User"); if
+	 * (!operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)) {
+	 * logger.info("Editing Existing User"); return new ResponseEntity<Response>(
+	 * new Response(HttpStatus.OK.toString(), true,
+	 * "User Exists with same userName"), HttpStatus.CONFLICT); }
+	 * 
+	 * if (operationType.equals(MovieRecommenderConstants.OPERATION_TYPE_EDIT_USER)
+	 * && ifUserExists(strUserName)) { if (editUser(userDefine)) {
+	 * 
+	 * return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(),
+	 * true, ""), HttpStatus.OK);
+	 * 
+	 * } } else { return new ResponseEntity<Response>( new
+	 * Response(HttpStatus.BAD_REQUEST.toString(), false, "User doesnot exist"),
+	 * HttpStatus.OK); }
+	 * 
+	 * return new ResponseEntity<Response>( new
+	 * Response(HttpStatus.CONFLICT.toString(), false,
+	 * "User Exists with same userName"), HttpStatus.OK); // return new
+	 * ResponseEntity<>("User Exists with same userName", // HttpStatus.CONFLICT);
+	 * 
+	 * } } catch (RegisterException e) {
+	 * 
+	 * return new ResponseEntity<Response>(new
+	 * Response(HttpStatus.INTERNAL_SERVER_ERROR.toString(), false,
+	 * "Something went wrong , Contact administrator"), HttpStatus.OK); // return
+	 * new ResponseEntity<>(e.getErrorMessage(), //
+	 * HttpStatus.INTERNAL_SERVER_ERROR);
+	 * 
+	 * }
+	 * 
+	 * } else { return new ResponseEntity<Response>( new
+	 * Response(HttpStatus.BAD_REQUEST.toString(), false, "User doesnot exist"),
+	 * HttpStatus.OK);
+	 * 
+	 * } return new ResponseEntity<Response>(new Response(HttpStatus.OK.toString(),
+	 * true, ""), HttpStatus.OK); }
+	 */
 
 }
