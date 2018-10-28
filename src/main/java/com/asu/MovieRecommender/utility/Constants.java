@@ -32,5 +32,6 @@ public class Constants {
 	public static final String VIDEOS = "videos";
 	/*Status Codes*/
 	public final static String STATUS_OK = "200";
+	public static final Object CINEMAS = "/cinemas";
 	
 }
