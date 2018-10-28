@@ -15,6 +15,7 @@ public class Movie {
 	@JsonProperty("poster_path")
 	private String poster_image_thumbnail;
 	private String overview;
+	private String site;
 
 	public Movie() {
 	}
@@ -62,5 +63,13 @@ public class Movie {
 
 	public void setOverview(String overview) {
 		this.overview = overview;
+	}
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
 	}
 }

@@ -66,16 +66,4 @@ public class MovieController {
 		*/}
 		return listOfShowtimes;
 	}
-	
-	@RequestMapping(value = "/api/getTrailers", produces = "application/json")
-	public ResponseEntity<TrailersJSON> getMovieTrailers() {
-		ResponseEntity<TrailersJSON> listOfTrailers = null;
-		try {
-			listOfTrailers = theMovieDBService.getNowPlayingMoviesTrailers();
-		} catch (MovieDetailsException exception) {
-			logger.error(exception.getErrorMessage(), exception);
-			
-		}
-		return listOfTrailers;
-	}
 }

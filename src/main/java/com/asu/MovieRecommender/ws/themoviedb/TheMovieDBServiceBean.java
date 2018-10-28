@@ -139,14 +139,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	}
 
 	@Override
-	public ResponseEntity<TrailersJSON> getNowPlayingMoviesTrailers() throws MovieDetailsException {
-		List<TrailersList> list = new ArrayList<TrailersList>();
-		ResponseEntity<TrailersList> response = null;
-
-		MoviesList nowPlayingMovies = getNowPlayingMoviesTheMovieDB().getBody();
-		TrailersJSON trailersJSON = new TrailersJSON();
-
-		for (Movie movie : nowPlayingMovies.getResults()) {
+	public void getNowPlayingMoviesTrailers(MoviesList listOfMovies) throws MovieDetailsException {
+		
+		for (Movie movie : listOfMovies.getResults()) {
 			int id = movie.getId();
 			HttpHeaders headers = new HttpHeaders();
 			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
@@ -156,25 +151,22 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
 
 			try {
-				response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
+				ResponseEntity<TrailersList> response1 = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
 						TrailersList.class);
 				TrailersList listOfTrailers = null;
-				listOfTrailers = response.getBody();
+				listOfTrailers = response1.getBody();
 				int size = listOfTrailers.getResults().size();
 				if (size >= 1)
 					listOfTrailers.getResults().subList(1, size).clear();
-				if (listOfTrailers.getResults() != null) {
-					list.add(listOfTrailers);
+				if (listOfTrailers.getResults() != null && size >=1) {
+					movie.setSite(listOfTrailers.getResults().get(0).getSite());
 				}
 				logger.info("Got the list of ", listOfTrailers);
 
 			} catch (Exception exception) {
 				throw new MovieDetailsException(exception.getMessage());
 			}
-
 		}
-		trailersJSON.setList(list);
-		return new ResponseEntity<TrailersJSON>(trailersJSON, HttpStatus.OK);
 	}
 
 	@Override
