@@ -16,9 +16,7 @@ import com.asu.MovieRecommender.MovieRecommenderApplication;
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 import com.asu.MovieRecommender.ws.themoviedb.CinemasList;
 import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
-import com.asu.MovieRecommender.ws.themoviedb.ShowtimesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
-import com.asu.MovieRecommender.ws.themoviedb.TrailersJSON;
 
 /**
  * 
@@ -61,9 +59,9 @@ public class MovieController {
 			listOfShowtimes = theMovieDBService.getCinemas(movieName);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
-			/*return new ResponseEntity<CinemasList>(
+			return new ResponseEntity<CinemasList>(
 					new CinemasList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
-		*/}
+		}
 		return listOfShowtimes;
 	}
 }

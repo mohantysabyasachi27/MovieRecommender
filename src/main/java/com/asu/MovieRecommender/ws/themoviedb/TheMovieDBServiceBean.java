@@ -46,36 +46,6 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	 * @return JSONObject
 	 * @throws MovieDetailsException
 	 */
-//	@Override
-//	public ResponseEntity<MoviesList> getNowPlayingMovies() throws MovieDetailsException {
-//
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.set(Constants.API_KEY_STRING, apiKeyValue);
-//		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-//		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.MOVIES);
-//		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_CINEMA_ID, Constants.PARAM_CINEMA_ID_VALUE);
-//
-//		ResponseEntity<MoviesList> response = null;
-//		MoviesList listOfMovies = null;
-//
-//		try {
-//			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
-//					MoviesList.class);
-//			listOfMovies = response.getBody();
-//			listOfMovies.setStatusCode(Constants.STATUS_OK);
-//			listOfMovies.setSuccess(true);
-//			List<Movie> movieList = listOfMovies.getResults();
-//			for (int i = 0; i < movieList.size(); i++) {
-//				if (movieList.get(i).getPoster_image_thumbnail() == null) {
-//					listOfMovies.getResults().remove(i);
-//				}
-//
-//			}
-//		} catch (Exception exception) {
-//			throw new MovieDetailsException(exception.getMessage());
-//		}
-//		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
-//	}
 
 	@Override
 	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException {
@@ -101,6 +71,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 					listOfMovies.getResults().remove(i);
 				}
 			}
+			getNowPlayingMoviesTrailers(listOfMovies);
 			logger.info("Got the list of ", listOfMovies);
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());

@@ -13,7 +13,14 @@ public class CinemasList implements Serializable{
 	private List<Cinema> cinemas;
 	private String statusCode ;
 	private boolean success;
-	private String errorReason;
+	private String errorMessage;
+
+	public CinemasList(String statusCode, boolean success, String errorMessage) {
+		super();
+		this.statusCode = statusCode;
+		this.success = success;
+		this.errorMessage = errorMessage;
+	}
 
 	public List<Cinema> getCinemas() {
 		return cinemas;
@@ -39,12 +46,12 @@ public class CinemasList implements Serializable{
 		this.success = success;
 	}
 
-	public String getErrorReason() {
-		return errorReason;
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
-	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 }
