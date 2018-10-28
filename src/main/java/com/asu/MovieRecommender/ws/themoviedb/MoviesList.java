@@ -14,8 +14,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MoviesList implements Serializable {
 	private static final long serialVersionUID = -7788619177798333712L;
-	private List<Movie> movies;
-	private String statusCode;
+	
+	private List<Movie> results;
+	private String statusCode ;
 	private boolean success;
 	private String errorReason;
 
@@ -28,15 +29,6 @@ public class MoviesList implements Serializable {
 		this.success = success;
 		this.errorReason = errorReason;
 	}
-
-	public List<Movie> getMovies() {
-		return movies;
-	}
-
-	public void setMovies(List<Movie> movies) {
-		this.movies = movies;
-	}
-
 	public String getStatusCode() {
 		return statusCode;
 	}
@@ -61,10 +53,16 @@ public class MoviesList implements Serializable {
 		this.errorReason = errorReason;
 	}
 
-	@Override
-	public String toString() {
-		return "MoviesList [movies=" + movies + ", statusCode=" + statusCode + ", success=" + success + ", errorReason="
-				+ errorReason + "]";
+	public List<Movie> getResults() {
+		return results;
 	}
 
+	public void setResults(List<Movie> results) {
+		this.results = results;
+	}
+	@Override
+	public String toString() {
+		return "MoviesList [results=" + results + ", statusCode=" + statusCode + ", success=" + success + ", errorReason="
+				+ errorReason + "]";
+	}
 }
