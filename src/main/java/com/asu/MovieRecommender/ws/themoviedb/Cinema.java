@@ -3,8 +3,32 @@ package com.asu.MovieRecommender.ws.themoviedb;
 import java.util.List;
 
 public class Cinema {
+	@Override
+	public String toString() {
+		return "Cinema [id=" + id + ", name=" + name + ", website=" + website + ", telephone=" + telephone
+				+ ", showtimes=" + showtimes + "]";
+	}
 	private String id;
 	private String name;
+	
+	
+	public Cinema(String id, String name, String website, String telephone, List<Showtimes> showtimes) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.website = website;
+		this.telephone = telephone;
+		this.showtimes = showtimes;
+	}
+	
+	
+	
+	public Cinema() {
+		super();
+	}
+
+
+
 	public String getId() {
 		return id;
 	}

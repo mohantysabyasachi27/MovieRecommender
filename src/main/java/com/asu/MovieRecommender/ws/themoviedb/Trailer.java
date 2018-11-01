@@ -4,6 +4,16 @@ public class Trailer {
 	private String key;
 	private String name;
 	private String site;
+	
+	public Trailer() {
+		super();
+	}
+	public Trailer(String key, String name, String site) {
+		super();
+		this.key = key;
+		this.name = name;
+		this.site = site;
+	}
 	public String getKey() {
 		return key;
 	}
@@ -25,4 +35,10 @@ public class Trailer {
 			this.site = "https://www.youtube.com/watch?v="+this.key;
 		}
 	}
+	@Override
+	public String toString() {
+		return "Trailer [key=" + key + ", name=" + name + ", site=" + site + "]";
+	}
+	
+	
 }
