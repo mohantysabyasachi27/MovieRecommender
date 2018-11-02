@@ -1,11 +1,8 @@
 package com.asu.MovieRecommender.Controllers;
 
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpStatus;
@@ -17,9 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.MovieRecommenderApplication;
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
-import com.asu.MovieRecommender.config.BasicConfiguration;
+import com.asu.MovieRecommender.ws.themoviedb.CinemasList;
 import com.asu.MovieRecommender.ws.themoviedb.MoviesList;
-import com.asu.MovieRecommender.ws.themoviedb.ShowtimesList;
 import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 
 /**
@@ -33,16 +29,6 @@ import com.asu.MovieRecommender.ws.themoviedb.TheMovieDBService;
 public class MovieController {
 
 	public static Logger logger = LogManager.getLogger(MovieRecommenderApplication.class);
-	
-	@Value("${movie.api.key}")
-	private String val;
-
-	private BasicConfiguration config;
-
-	@Autowired
-	public void setApp(BasicConfiguration config) {
-		this.config = config;
-	}
 
 	@Autowired
 	private TheMovieDBService theMovieDBService;
@@ -56,25 +42,25 @@ public class MovieController {
 	public ResponseEntity<MoviesList> getListOfMovies() {
 		ResponseEntity<MoviesList> listOfMovies = null;
 		try {
-			listOfMovies = theMovieDBService.getNowPlayingMovies();
+			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB();
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<MoviesList>(
-					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
 		}
 		return listOfMovies;
 	}
 	
 	@PostMapping
 	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
-	public ResponseEntity<ShowtimesList> getMovieShowtime(@RequestParam("movieId") String movieId) {
-		ResponseEntity<ShowtimesList> listOfShowtimes = null;
+	public ResponseEntity<CinemasList> getMovieShowtime(@RequestParam("movieName") String movieName) {
+		ResponseEntity<CinemasList> listOfShowtimes = null;
 		try {
-			listOfShowtimes = theMovieDBService.getMovieShowtimes(movieId);
+			listOfShowtimes = theMovieDBService.getCinemas(movieName);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
-			return new ResponseEntity<ShowtimesList>(
-					new ShowtimesList(HttpStatus.FORBIDDEN.toString(), false, exception.getMessage()), HttpStatus.OK);
+			return new ResponseEntity<CinemasList>(
+					new CinemasList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
 		}
 		return listOfShowtimes;
 	}

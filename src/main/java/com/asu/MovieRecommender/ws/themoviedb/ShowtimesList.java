@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author leharbhatt
- *
+ * A class to JSON object to JAVA object
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShowtimesList implements Serializable {
