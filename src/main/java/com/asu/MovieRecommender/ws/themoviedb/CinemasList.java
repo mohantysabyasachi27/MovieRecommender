@@ -3,15 +3,15 @@ package com.asu.MovieRecommender.ws.themoviedb;
 import java.io.Serializable;
 import java.util.List;
 
-public class CinemasList implements Serializable{
+public class CinemasList implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -898623802841147377L;
-	
+
 	private List<Cinema> cinemas;
-	private String statusCode ;
+	private String statusCode;
 	private boolean success;
 	private String errorMessage;
 
@@ -20,6 +20,10 @@ public class CinemasList implements Serializable{
 		this.statusCode = statusCode;
 		this.success = success;
 		this.errorMessage = errorMessage;
+	}
+
+	public CinemasList() {
+		super();
 	}
 
 	public List<Cinema> getCinemas() {
@@ -53,5 +57,13 @@ public class CinemasList implements Serializable{
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+
+	@Override
+	public String toString() {
+		return "CinemasList [cinemas=" + cinemas + ", statusCode=" + statusCode + ", success=" + success
+				+ ", errorMessage=" + errorMessage + "]";
+	}
+	
+	
 
 }

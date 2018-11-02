@@ -25,4 +25,11 @@ public class TrailersList implements Serializable {
 		this.results = results;
 	}
 
+	@Override
+	public String toString() {
+		return "TrailersList [results=" + results + "]";
+	}
+
+	
+	
 }

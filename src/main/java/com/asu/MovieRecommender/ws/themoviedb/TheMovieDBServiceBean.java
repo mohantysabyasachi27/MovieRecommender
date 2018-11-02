@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 import com.asu.MovieRecommender.utility.ApiUrl;
 import com.asu.MovieRecommender.utility.Constants;
+import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 
 /**
  * @author leharbhatt
@@ -66,13 +67,15 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			listOfMovies.setStatusCode(Constants.STATUS_OK);
 			listOfMovies.setSuccess(true);
 			movieList = listOfMovies.getResults();
-			for (int i = 0; i < movieList.size(); i++) {
-				if (movieList.get(i).getPoster_image_thumbnail() == null) {
-					listOfMovies.getResults().remove(i);
+			if(!CollectionUtils.isEmpty(movieList)) {
+				for (int i = 0; i < movieList.size(); i++) {
+					if (movieList.get(i).getPoster_image_thumbnail() == null) {
+						listOfMovies.getResults().remove(i);
+					}
 				}
+				getNowPlayingMoviesTrailers(listOfMovies);
 			}
-			getNowPlayingMoviesTrailers(listOfMovies);
-			logger.info("Got the list of ", listOfMovies);
+			logger.info("Got the list of {}", listOfMovies.getResults());
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
@@ -84,24 +87,24 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
 		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.SHOWTIMES);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_QUERY, movieName);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_FIELD, Constants.CINEMA_MOVIE_TITLE);
-		headers.add("user-agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-
+		
 		ResponseEntity<ShowtimesList> response = null;
 		ShowtimesList listOfShowtimes = null;
 
 		try {
-			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					ShowtimesList.class);
 			listOfShowtimes = response.getBody();
 			listOfShowtimes.setStatusCode(Constants.STATUS_OK);
 			listOfShowtimes.setSuccess(true);
-			logger.info("Got the list of ", listOfShowtimes);
+			logger.info("Got the list of {}", listOfShowtimes);
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 
@@ -115,9 +118,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		for (Movie movie : listOfMovies.getResults()) {
 			int id = movie.getId();
 			HttpHeaders headers = new HttpHeaders();
-			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 			headers.add("user-agent",
 					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, id, Constants.VIDEOS);
 			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
 
@@ -132,7 +135,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				if (listOfTrailers.getResults() != null && size >=1) {
 					movie.setSite(listOfTrailers.getResults().get(0).getSite());
 				}
-				logger.info("Got the list of ", listOfTrailers);
+				logger.info("Got the list of {}", listOfTrailers.getResults());
 
 			} catch (Exception exception) {
 				throw new MovieDetailsException(exception.getMessage());
@@ -145,21 +148,21 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
 		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.CINEMAS);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
-		headers.add("user-agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HashMap<String,Cinema> cinemaMap = new HashMap<String,Cinema>();
 		ResponseEntity<CinemasList> response = null;
 		CinemasList cinemasList = null;
 		try {
-			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					CinemasList.class);
 			cinemasList = response.getBody();
 			cinemasList.setStatusCode(Constants.STATUS_OK);
 			cinemasList.setSuccess(true);
-			logger.info("Got the list of ", cinemasList);
+			logger.info("Got the list of {}", cinemasList.getCinemas());
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
