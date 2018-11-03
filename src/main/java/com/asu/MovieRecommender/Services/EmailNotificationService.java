@@ -12,35 +12,36 @@ import com.asu.MovieRecommender.User.User;
 @Service
 public class EmailNotificationService {
 
-	
 	@Autowired
 	private MailBuilder mailBuilder;
-	
+
 	private JavaMailSender mailSender;
-	 
-    @Autowired
-     public EmailNotificationService(JavaMailSender mailSender) {
-    	  this.mailSender = mailSender;
-    	  
+
+	@Autowired
+	public EmailNotificationService(JavaMailSender mailSender) {
+		this.mailSender = mailSender;
+
 	}
-    
-    
-    public void sendMail(User user) throws Exception
-    {
-    	MimeMessagePreparator message = messageSender->{
-    		MimeMessageHelper helper = new MimeMessageHelper(messageSender);
-    		helper.setTo(user.getUserEmailId());
-    		helper.setFrom("kmrprabhu93@gmail.com");
-    		helper.setSubject("Registration Success");
-    		 String content = mailBuilder.build(user.getFirstName(),"Thank You for registering");
-    	        helper.setText(content, true);
-    	};
-    	
-    	try{mailSender.send(message);}
-    	catch(MailException m){
-    		throw new Exception(m.getMessage());
-    	}
-    	
-    }
-    
+
+	public String sendMail(User user) throws Exception {
+		MimeMessagePreparator message = messageSender -> {
+			MimeMessageHelper helper = new MimeMessageHelper(messageSender);
+			helper.setTo(user.getUserEmailId());
+			helper.setFrom("kmrprabhu93@gmail.com");
+			helper.setSubject("Registration Success");
+			// message.setText(content, true);
+			String content = mailBuilder.build(user.getFirstName(), "Thank You for registering");
+			helper.setText(content, true);
+			
+		};
+
+		try {
+			mailSender.send(message);
+			return null;
+		} catch (MailException m) {
+			throw new Exception(m.getMessage());
+		}
+
+	}
+
 }

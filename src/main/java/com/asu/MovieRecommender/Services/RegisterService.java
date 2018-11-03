@@ -7,14 +7,23 @@ import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.auditing.CurrentDateTimeProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +32,10 @@ import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.Exceptions.RegisterException;
 import com.asu.MovieRecommender.User.Response;
 import com.asu.MovieRecommender.User.User;
+import com.asu.MovieRecommender.config.TwilioConfig;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
+@PropertySource(value = "classpath:application.properties")
 @Service
 public class RegisterService {
 	public static Logger logger = LogManager.getLogger(RegisterService.class);
@@ -34,6 +45,15 @@ public class RegisterService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	EmailAndSMSAsyncService emailAndSMS;
+	
+//	 @Autowired
+//	 private TwilioConfig twilioConfig;
+//	 
+//	 @Autowired
+//	 private EmailNotificationService emailNotific;
 
 	public boolean ifUserExists(String userName) throws RegisterException {
 		return (null != userRepo.findByUserName(userName));
@@ -44,8 +64,12 @@ public class RegisterService {
 		try {
 			userDefine.setUserPassword(passwordEncoder.encode(userDefine.getUserPassword()));
 			userRepo.insert(userDefine);
+			emailAndSMS.async(userDefine);
+//			emailNotific.sendMail(userDefine);
+//			sendSMS(userDefine.getUserContactNo());
 			return true;
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			throw new RegisterException(ex.getMessage());
 		}
 
@@ -191,6 +215,11 @@ public class RegisterService {
 		response.setErrorReason("Bad Request!");
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
+	
+	
+	
+	
+	
 
 	/*
 	 * public ResponseEntity<Response> addUserAfterValidation(User userDefine,
