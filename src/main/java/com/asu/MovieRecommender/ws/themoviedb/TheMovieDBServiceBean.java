@@ -70,7 +70,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			String key = userLoginService.getLoggedUserDetails().getUserName();
 			String col = "now_playing";
 			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
-			if (StringUtils.isNotBlank(cacheMovieList)) {
+			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
 				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
 				});
 				listOfMovies.setStatusCode(Constants.STATUS_OK);

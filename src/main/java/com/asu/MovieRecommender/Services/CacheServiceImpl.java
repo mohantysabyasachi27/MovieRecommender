@@ -25,6 +25,9 @@ public class CacheServiceImpl implements CacheService {
 
 	@Override
 	public String get(String key, String col) {
+		if(StringUtils.isBlank(key)) {
+			return new String();
+		}
 		RedisConnection connection = connectionFactory.getConnection();
 		byte[] val = connection.hGet(key.getBytes(), col.getBytes()) == null ? new byte[0] : connection.hGet(key.getBytes(), col.getBytes());
 		return new String(val, StandardCharsets.UTF_8);
