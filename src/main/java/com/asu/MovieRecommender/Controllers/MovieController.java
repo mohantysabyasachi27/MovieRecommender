@@ -52,10 +52,10 @@ public class MovieController {
 	public ResponseEntity<MoviesList> getListOfMovies(HttpServletRequest request) {
 		ResponseEntity<MoviesList> listOfMovies = null;
 		try {
-			if(!userLoginService.isLoggedIn()) {
+			/*if(!userLoginService.isLoggedIn()) {
 				return new ResponseEntity<MoviesList>(
 						new MoviesList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
-			}
+			}*/
 			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB();
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
