@@ -1,4 +1,9 @@
 # MovieRecommender 
+
+The complete application can be accessed by the URL [http://34.217.104.81:4200](http://34.217.104.81:4200)
+
+(Note: If you want to explore docker, follow below steps.)
+
 <br />
 • A movie showtime finder <br />
 
