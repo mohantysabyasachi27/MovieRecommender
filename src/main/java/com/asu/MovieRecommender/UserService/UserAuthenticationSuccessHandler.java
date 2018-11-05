@@ -29,7 +29,7 @@ public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		 Response logInResponse= new Response(HttpStatus.OK.toString(), true, "");
 			String strLogInResponse = null;
 			
-			
+		request.getSession(true);
 		response.addHeader("status", "200");response.setStatus(200);
 		response.addHeader("Error", "");
 		response.addHeader("success", "true");

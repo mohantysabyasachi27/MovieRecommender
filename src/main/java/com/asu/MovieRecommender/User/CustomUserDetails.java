@@ -1,6 +1,7 @@
 package com.asu.MovieRecommender.User;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,20 @@ public class CustomUserDetails extends User implements UserDetails{
 	public CustomUserDetails(final User user) {
 		super(user);
 	}
+
+	public CustomUserDetails() {
+		super();
+	}
+
+	public CustomUserDetails(String firstName, String lastName, String userName, String userPassword,
+			String userEmailId, String userContactNo, Date userDOB, String userCity, String userAddress,
+			String userPinCode) {
+		super(firstName, lastName, userName, userPassword, userEmailId, userContactNo, userDOB, userCity, userAddress,
+				userPinCode);
+		// TODO Auto-generated constructor stub
+	}
+
+
 
 	private static final long serialVersionUID = 1L;
 
