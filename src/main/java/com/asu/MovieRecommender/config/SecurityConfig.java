@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.asu.MovieRecommender.UserService.SpringLogoutSuccessHandler;
 import com.asu.MovieRecommender.UserService.UserAuthenticationFailureHandler;
 import com.asu.MovieRecommender.UserService.UserAuthenticationSuccessHandler;
 import com.asu.MovieRecommender.UserService.UserGoogleAuthenticationSuccessHandler;
@@ -40,6 +41,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private PasswordEncoder passwordencoder;
 
 	@Autowired
+	private SpringLogoutSuccessHandler springLogoutSuccessHandler;
+
+	@Autowired
 	private UserGoogleAuthenticationSuccessHandler userGoogleAuthenticationHandler;
 	@Autowired
 	private UserAuthenticationFailureHandler userAuthenticationFailureHandler;
@@ -51,6 +55,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordencoder);
 	}
 
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordencoder);
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
@@ -58,15 +67,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and().formLogin()
 				.failureUrl("/login?error").failureHandler(userAuthenticationFailureHandler)
 				.successHandler(userAuthenticationSuccessHandler)/* .loginPage("/movieloginpage.html") */
-				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler)
-				.and().logout().logoutSuccessUrl("/oauth2");
-
-		/*
-		 * http .authorizeRequests() .antMatchers("/login*").anonymous()
-		 * .anyRequest().authenticated() .and() .formLogin() .loginPage("/login.html")
-		 * .defaultSuccessUrl("/homepage.html") .failureUrl("/login.html?error=true")
-		 * .and() .logout().logoutSuccessUrl("/login.html");
-		 */
+				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler).and().logout()
+				.deleteCookies("MYSESSIONID").invalidateHttpSession(true).logoutSuccessUrl("/oauth2")
+				.logoutUrl("/logout").logoutSuccessHandler(springLogoutSuccessHandler);
 	}
 
 	@Bean
