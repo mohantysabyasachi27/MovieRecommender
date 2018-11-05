@@ -1,6 +1,9 @@
 package com.asu.MovieRecommender.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +29,10 @@ public class UserAuthService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepoCrud.findByUserName(username);
 		if (null != user) {
-			return new CustomUserDetails(user);
+			CustomUserDetails customUserDetails = new CustomUserDetails(user);
+			Authentication authentication= new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities()) ; 
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			return customUserDetails;
 		}
 		throw new UsernameNotFoundException("User is not found in the system");
 	}

@@ -17,7 +17,7 @@ public interface TheMovieDBService {
 
 	ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException;
 
-	void getNowPlayingMoviesTrailers(MoviesList listOfMovies) throws MovieDetailsException;
+	void getNowPlayingMoviesTrailers(List<Movie> listOfMovies) throws MovieDetailsException;
 
 	ResponseEntity<CinemasList> getCinemas(String movieName) throws MovieDetailsException;
 }
