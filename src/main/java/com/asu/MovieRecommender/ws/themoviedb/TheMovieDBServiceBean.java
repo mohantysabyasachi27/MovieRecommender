@@ -1,14 +1,14 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
 import java.util.ArrayList;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,9 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
+import com.asu.MovieRecommender.Services.CacheService;
+import com.asu.MovieRecommender.UserService.UserLoginService;
 import com.asu.MovieRecommender.utility.ApiUrl;
 import com.asu.MovieRecommender.utility.Constants;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 /**
  * @author leharbhatt
@@ -39,6 +44,12 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private CacheService cacheService;
+	
+	@Autowired
+	private UserLoginService userLoginService;
 
 	/**
 	 * This method invokes the movieDb api to get now playing movies and returns the
@@ -51,31 +62,49 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	@Override
 	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException {
 		ResponseEntity<MoviesList> response = null;
-		MoviesList listOfMovies = null;
+		MoviesList listOfMovies = new MoviesList();
 		List<Movie> movieList = null;
+		ObjectMapper map = new ObjectMapper();
+
 		try {
-			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.NOWPLAYING);
-			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
-			HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			headers.add("user-agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
-					MoviesList.class);
-			listOfMovies = response.getBody();
-			listOfMovies.setStatusCode(Constants.STATUS_OK);
-			listOfMovies.setSuccess(true);
-			movieList = listOfMovies.getResults();
-			if(!CollectionUtils.isEmpty(movieList)) {
+			String key = userLoginService.getLoggedUserDetails().getUserName();
+			String col = "now_playing";
+			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
+			if (StringUtils.isNotBlank(cacheMovieList)) {
+				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
+				});
+				listOfMovies.setStatusCode(Constants.STATUS_OK);
+				listOfMovies.setSuccess(true);
+				listOfMovies.setResults(movieList);
+			}
+
+			if (CollectionUtils.isEmpty(movieList)) {
+				ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE,
+						Constants.NOWPLAYING);
+				apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+				HttpHeaders headers = new HttpHeaders();
+				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+				headers.add("user-agent",
+						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+				HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+				response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
+						MoviesList.class);
+				listOfMovies = response.getBody();
+				listOfMovies.setStatusCode(Constants.STATUS_OK);
+				listOfMovies.setSuccess(true);
+				movieList = listOfMovies.getResults();			
+			if (!CollectionUtils.isEmpty(movieList)) {
 				for (int i = 0; i < movieList.size(); i++) {
 					if (movieList.get(i).getPoster_image_thumbnail() == null) {
 						listOfMovies.getResults().remove(i);
 					}
 				}
-				getNowPlayingMoviesTrailers(listOfMovies);
+				getNowPlayingMoviesTrailers(movieList);
 			}
-			logger.info("Got the list of {}", listOfMovies.getResults());
+			
+			cacheService.put(key, col, map.writeValueAsString(movieList));
+			logger.debug("Got the list of {}", movieList);
+			}	
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
@@ -113,9 +142,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	}
 
 	@Override
-	public void getNowPlayingMoviesTrailers(MoviesList listOfMovies) throws MovieDetailsException {
+	public void getNowPlayingMoviesTrailers(List<Movie> listOfMovies) throws MovieDetailsException {
 		
-		for (Movie movie : listOfMovies.getResults()) {
+		for (Movie movie : listOfMovies) {
 			int id = movie.getId();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("user-agent",

@@ -5,10 +5,11 @@ import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,14 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asu.MovieRecommender.Constants.MovieRecommenderConstants;
-import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.User.CustomUserDetails;
-
-import com.asu.MovieRecommender.User.Response;
-import com.asu.MovieRecommender.User.LogInUser;
-import com.asu.MovieRecommender.User.User;
-
-
 import com.asu.MovieRecommender.UserService.UserLoginService;
 
 @RestController
@@ -31,19 +25,16 @@ import com.asu.MovieRecommender.UserService.UserLoginService;
 public class LoginController {
 	@Autowired
 	private UserLoginService userLoginService;
-	@Autowired
-	private UserRepoCrud userRepo;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	
+	public static Logger logger = LogManager.getLogger(LoginController.class);
 	
 	@RequestMapping(method = RequestMethod.GET,value="/login/creds")
-	public Principal loginGoogle(Principal principal) throws Exception {
-		
+	public Principal loginGoogle(Principal principal) throws Exception {	
      return principal;
 	}
-
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/")
-	public ResponseEntity postLoginGoogle() throws Exception {
+	public ResponseEntity<Boolean> postLoginGoogle() throws Exception {
 		return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
 	}
 
@@ -66,6 +57,7 @@ public class LoginController {
 
 	@RequestMapping("/logout")
 	public Boolean logout() throws Exception {
+		logger.info("Logging out : {}", userLoginService.getLoggedUserDetails().getUsername());
 		userLoginService.logout();
 		return Boolean.TRUE;
 	}

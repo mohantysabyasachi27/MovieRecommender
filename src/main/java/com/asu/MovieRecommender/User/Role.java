@@ -1,6 +1,8 @@
 package com.asu.MovieRecommender.User;
 
-public class Role {
+import java.io.Serializable;
+
+public class Role implements Serializable{
 
 	/*
 	 * @author Sabyasachi Mohanty
@@ -8,7 +10,7 @@ public class Role {
 	 * @Task Integrate Spring Security - User Role Object
 	 */
 	
-	
+	private static final long serialVersionUID = 1L;
 	private int roleId;
 	private String userName;
 	public Role(int roleId, String userName) {

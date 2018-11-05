@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.asu.MovieRecommender.DBServices.UserRepoCrud;
 import com.asu.MovieRecommender.User.CustomUserDetails;
@@ -15,6 +16,9 @@ public class SpringSecurityUserLoginService implements UserLoginService {
 	 * @since Sept28, Sprint-1
 	 * @Task Integrate Spring Sessions -- This class is to check the Loggedin user details from sessions context
 	 */
+
+	@Autowired
+	private UserLoginService userLoginService;
 	
 	
 	@Autowired
@@ -26,7 +30,9 @@ public class SpringSecurityUserLoginService implements UserLoginService {
 
 	@Override
 	public void logout() {
-		SecurityContextHolder.getContext().setAuthentication(null);
+		//SecurityContextHolder.getContext().setAuthentication(null);
+		System.out.println(userLoginService.getLoggedUserDetails().getUserName());
+		SecurityContextHolder.clearContext();
 	}
 
 	@Override
@@ -38,6 +44,8 @@ public class SpringSecurityUserLoginService implements UserLoginService {
 	@Override
 	public CustomUserDetails getLoggedUserDetails() {
 		CustomUserDetails loggedUserDetails = null;
+		String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+		System.out.println(sessionId);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (isAuthenticated(authentication)) {
 			Object principal = authentication.getPrincipal();

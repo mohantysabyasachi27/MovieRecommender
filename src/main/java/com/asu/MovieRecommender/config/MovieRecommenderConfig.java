@@ -12,7 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +20,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.web.client.RestTemplate;
 
+import com.asu.MovieRecommender.Services.CacheService;
+import com.asu.MovieRecommender.Services.CacheServiceImpl;
+import com.asu.MovieRecommender.UserService.SpringLogoutSuccessHandler;
 import com.asu.MovieRecommender.UserService.SpringSecurityUserLoginService;
 import com.asu.MovieRecommender.UserService.UserLoginService;
 import com.mongodb.MongoClient;
@@ -28,27 +30,32 @@ import com.mongodb.MongoClient;
 @Configuration
 @PropertySource("classpath:api.properties")
 public class MovieRecommenderConfig {
-	
+
 	/*
 	 * @author Sabyasachi Mohanty
+	 * 
 	 * @since Sept28, Sprint-1
+	 * 
 	 * @Task Bean Definations for Spring Boot Project
 	 */
-	
-	private static List<String> clients = Arrays.asList("google"/*, "facebook"*/);
+
+	private static List<String> clients = Arrays.asList("google"/* , "facebook" */);
 
 	@Value("${spring.security.oauth2.client.clientId}")
 	private String clientId;
+	
 	@Value("${spring.security.oauth2.client.clientSecret}")
 	private String clientSecret;
+	
 	@Value("${spring.security.oauth2.client.accessTokenUri}")
 	private String accessTokenUri;
+	
 	@Value("${spring.security.oauth2.client.redirectUriTemplate}")
 	private String redirectUriTemplate;
 
 	@Bean
-	public LettuceConnectionFactory connectionFactory() {
-		return new LettuceConnectionFactory();
+	public CacheService cacheService() {
+		return new CacheServiceImpl();
 	}
 
 	@Bean
@@ -79,6 +86,11 @@ public class MovieRecommenderConfig {
 	@Bean
 	public PasswordEncoder passwordencoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public SpringLogoutSuccessHandler springLogoutSuccessHandler() {
+		return new SpringLogoutSuccessHandler();
 	}
 
 	@Bean
