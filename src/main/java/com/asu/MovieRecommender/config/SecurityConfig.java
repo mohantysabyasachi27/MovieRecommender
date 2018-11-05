@@ -67,9 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/login/**").authenticated().anyRequest().permitAll().and().formLogin()
 				.failureUrl("/login?error").failureHandler(userAuthenticationFailureHandler)
 				.successHandler(userAuthenticationSuccessHandler)/* .loginPage("/movieloginpage.html") */
-				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler).and().logout()
-				.deleteCookies("MYSESSIONID").invalidateHttpSession(true).logoutSuccessUrl("/oauth2")
-				.logoutUrl("/logout").logoutSuccessHandler(springLogoutSuccessHandler);
+				.permitAll().and().oauth2Login().successHandler(userGoogleAuthenticationHandler).and()
+				.logout().deleteCookies("MYSESSIONID").invalidateHttpSession(true)
+				.logoutSuccessUrl("/oauth2").logoutUrl("/logout")
+				.logoutSuccessHandler(springLogoutSuccessHandler);
 	}
 
 	@Bean
