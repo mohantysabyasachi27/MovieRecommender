@@ -1,9 +1,11 @@
 package com.asu.MovieRecommender.Services;
 
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +17,8 @@ import com.asu.MovieRecommender.Exceptions.RegisterException;
 import com.asu.MovieRecommender.User.Response;
 import com.asu.MovieRecommender.User.User;
 
+
+@PropertySource(value = "classpath:application.properties")
 @Service
 public class RegisterService {
 	public static Logger logger = LogManager.getLogger(RegisterService.class);
@@ -24,6 +28,15 @@ public class RegisterService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	EmailAndSMSAsyncService emailAndSMS;
+	
+//	 @Autowired
+//	 private TwilioConfig twilioConfig;
+//	 
+//	 @Autowired
+//	 private EmailNotificationService emailNotific;
 
 	public boolean ifUserExists(String userName) throws RegisterException {
 		return (null != userRepo.findByUserName(userName));
@@ -34,8 +47,12 @@ public class RegisterService {
 		try {
 			userDefine.setUserPassword(passwordEncoder.encode(userDefine.getUserPassword()));
 			userRepo.insert(userDefine);
+			emailAndSMS.async(userDefine);
+//			emailNotific.sendMail(userDefine);
+//			sendSMS(userDefine.getUserContactNo());
 			return true;
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			throw new RegisterException(ex.getMessage());
 		}
 
@@ -167,6 +184,11 @@ public class RegisterService {
 		response.setErrorReason("Bad Request!");
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
+	
+	
+	
+	
+	
 
 	/*public ResponseEntity<Response> addUserAfterValidation(User userDefine, String operationType) {
 
