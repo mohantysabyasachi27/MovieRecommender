@@ -14,6 +14,7 @@ public class CinemasList implements Serializable {
 	private String statusCode;
 	private boolean success;
 	private String errorMessage;
+	private String site;
 
 	public CinemasList(String statusCode, boolean success, String errorMessage) {
 		super();
@@ -56,6 +57,14 @@ public class CinemasList implements Serializable {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
 	}
 
 	@Override

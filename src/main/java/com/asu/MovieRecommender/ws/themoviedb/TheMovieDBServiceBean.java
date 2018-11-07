@@ -44,10 +44,10 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private CacheService cacheService;
-	
+
 	@Autowired
 	private UserLoginService userLoginService;
 
@@ -67,9 +67,11 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		ObjectMapper map = new ObjectMapper();
 
 		try {
+
 			String key = userLoginService.getLoggedUserDetails().getUserName();
 			String col = "now_playing";
-			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
+			String cacheMovieList = cacheService.get(key, col) == null ? ""
+					: String.valueOf(cacheService.get(key, col));
 			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
 				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
 				});
@@ -92,19 +94,19 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				listOfMovies = response.getBody();
 				listOfMovies.setStatusCode(Constants.STATUS_OK);
 				listOfMovies.setSuccess(true);
-				movieList = listOfMovies.getResults();			
-			if (!CollectionUtils.isEmpty(movieList)) {
-				for (int i = 0; i < movieList.size(); i++) {
-					if (movieList.get(i).getPoster_image_thumbnail() == null) {
-						listOfMovies.getResults().remove(i);
+				movieList = listOfMovies.getResults();
+				if (!CollectionUtils.isEmpty(movieList)) {
+					for (int i = 0; i < movieList.size(); i++) {
+
+						if (movieList.get(i).getPoster_image_thumbnail() == null) {
+							listOfMovies.getResults().remove(i);
+						}
 					}
 				}
-				getNowPlayingMoviesTrailers(movieList);
+
+				cacheService.put(key, col, map.writeValueAsString(movieList));
+				logger.debug("Got the list of {}", movieList);
 			}
-			
-			cacheService.put(key, col, map.writeValueAsString(movieList));
-			logger.debug("Got the list of {}", movieList);
-			}	
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
@@ -112,7 +114,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	}
 
 	@Override
-	public List<Showtimes> getMovieShowtimes(String movieName) throws MovieDetailsException {
+	public List<Showtimes> getMovieShowtimes(String movieName, String movieId) throws MovieDetailsException {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
@@ -123,7 +125,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_QUERY, movieName);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_FIELD, Constants.CINEMA_MOVIE_TITLE);
-		
+
 		ResponseEntity<ShowtimesList> response = null;
 		ShowtimesList listOfShowtimes = null;
 
@@ -142,38 +144,37 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	}
 
 	@Override
-	public void getNowPlayingMoviesTrailers(List<Movie> listOfMovies) throws MovieDetailsException {
-		
-		for (Movie movie : listOfMovies) {
-			int id = movie.getId();
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("user-agent",
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, id, Constants.VIDEOS);
-			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+	public String getNowPlayingMoviesTrailers(String movieId) throws MovieDetailsException {
 
-			try {
-				ResponseEntity<TrailersList> response1 = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity,
-						TrailersList.class);
-				TrailersList listOfTrailers = null;
-				listOfTrailers = response1.getBody();
-				int size = listOfTrailers.getResults().size();
-				if (size >= 1)
-					listOfTrailers.getResults().subList(1, size).clear();
-				if (listOfTrailers.getResults() != null && size >=1) {
-					movie.setSite(listOfTrailers.getResults().get(0).getSite());
-				}
-				logger.info("Got the list of {}", listOfTrailers.getResults());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, movieId, Constants.VIDEOS);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
 
-			} catch (Exception exception) {
-				throw new MovieDetailsException(exception.getMessage());
+		try {
+			ResponseEntity<TrailersList> response1 = restTemplate.exchange(
+					apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity, TrailersList.class);
+			TrailersList listOfTrailers = null;
+			listOfTrailers = response1.getBody();
+			int size = listOfTrailers.getResults().size();
+			if (size >= 1)
+				listOfTrailers.getResults().subList(1, size).clear();
+			if (listOfTrailers.getResults() != null && size >= 1) {
+				return listOfTrailers.getResults().get(0).getSite();
 			}
+			logger.info("Got the list of {}", listOfTrailers.getResults());
+
+		} catch (Exception exception) {
+			throw new MovieDetailsException(exception.getMessage());
 		}
+		return null;
+
 	}
 
 	@Override
-	public ResponseEntity<CinemasList> getCinemas(String movieName) throws MovieDetailsException {
+	public ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
@@ -182,30 +183,31 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
 		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.CINEMAS);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
-		HashMap<String,Cinema> cinemaMap = new HashMap<String,Cinema>();
+		HashMap<String, Cinema> cinemaMap = new HashMap<String, Cinema>();
 		ResponseEntity<CinemasList> response = null;
 		CinemasList cinemasList = null;
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					CinemasList.class);
 			cinemasList = response.getBody();
+			cinemasList.setSite(getNowPlayingMoviesTrailers(movieId));
 			cinemasList.setStatusCode(Constants.STATUS_OK);
 			cinemasList.setSuccess(true);
 			logger.info("Got the list of {}", cinemasList.getCinemas());
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
-		
+
 		List<Cinema> cinemasResponse = cinemasList.getCinemas();
-		for(int i = 0 ;i<cinemasResponse.size();i++) {
+		for (int i = 0; i < cinemasResponse.size(); i++) {
 			cinemaMap.put(cinemasResponse.get(i).getId(), cinemasResponse.get(i));
 		}
-		List<Showtimes> showtimes = getMovieShowtimes(movieName);
-		for(int i =0 ;i<showtimes.size();i++) {
+		List<Showtimes> showtimes = getMovieShowtimes(movieName, movieId);
+		for (int i = 0; i < showtimes.size(); i++) {
 			String id = showtimes.get(i).getCinema_id();
 			Cinema cinema = cinemaMap.get(id);
-			List<Showtimes> m = cinema.getMovieList();;
-			if(m != null)
+			List<Showtimes> m = cinema.getMovieList();
+			if (m != null)
 				m.add(showtimes.get(i));
 			else {
 				m = new ArrayList<Showtimes>();

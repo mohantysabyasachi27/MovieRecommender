@@ -13,11 +13,11 @@ import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 
 public interface TheMovieDBService {
 
-	public List<Showtimes> getMovieShowtimes(String movieId) throws MovieDetailsException;
+	public List<Showtimes> getMovieShowtimes(String movieName, String movieId) throws MovieDetailsException;
 
 	ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException;
 
-	void getNowPlayingMoviesTrailers(List<Movie> listOfMovies) throws MovieDetailsException;
+	String getNowPlayingMoviesTrailers(String movieId) throws MovieDetailsException;
 
-	ResponseEntity<CinemasList> getCinemas(String movieName) throws MovieDetailsException;
+	ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException;
 }

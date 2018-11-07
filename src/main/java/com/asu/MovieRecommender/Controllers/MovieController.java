@@ -68,7 +68,7 @@ public class MovieController {
 	
 	@PostMapping
 	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
-	public ResponseEntity<CinemasList> getMovieShowtime(@RequestParam("movieName") String movieName) {
+	public ResponseEntity<CinemasList> getMovieShowtime(@RequestParam("movieName") String movieName, @RequestParam("movieId") String movieId) {
 		ResponseEntity<CinemasList> listOfShowtimes = null;
 		try {
 			if(!userLoginService.isLoggedIn()) {
@@ -76,7 +76,7 @@ public class MovieController {
 						new CinemasList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
 			}
 			
-			listOfShowtimes = theMovieDBService.getCinemas(movieName);
+			listOfShowtimes = theMovieDBService.getCinemas(movieName, movieId);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<CinemasList>(

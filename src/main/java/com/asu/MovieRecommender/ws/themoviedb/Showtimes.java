@@ -22,7 +22,6 @@ public class Showtimes {
 	private String cinema_id;
 	private String start_at;
 	private String booking_link;
-
 	public String getCinema_id() {
 		return cinema_id;
 	}
