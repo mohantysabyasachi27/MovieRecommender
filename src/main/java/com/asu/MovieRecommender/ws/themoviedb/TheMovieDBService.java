@@ -15,7 +15,7 @@ public interface TheMovieDBService {
 
 	public List<Showtimes> getMovieShowtimes(String movieName, String movieId) throws MovieDetailsException;
 
-	ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException;
+	ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB(String type) throws MovieDetailsException;
 
 	String getNowPlayingMoviesTrailers(String movieId) throws MovieDetailsException;
 

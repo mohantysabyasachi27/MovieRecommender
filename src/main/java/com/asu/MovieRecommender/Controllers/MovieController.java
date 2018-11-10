@@ -47,16 +47,16 @@ public class MovieController {
 	 * 
 	 * @return JSONObject
 	 */
-	
-	@RequestMapping(value = "/api/getMovies", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<MoviesList> getListOfMovies(HttpServletRequest request) {
+	@PostMapping
+	@RequestMapping(value = "/api/getMovies", method = RequestMethod.POST, produces = "application/json")
+	public ResponseEntity<MoviesList> getListOfMovies(@RequestParam("type") String type) {
 		ResponseEntity<MoviesList> listOfMovies = null;
 		try {
 			/*if(!userLoginService.isLoggedIn()) {
 				return new ResponseEntity<MoviesList>(
 						new MoviesList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
 			}*/
-			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB();
+			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB(type);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<MoviesList>(

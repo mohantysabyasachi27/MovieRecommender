@@ -60,7 +60,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	 */
 
 	@Override
-	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB() throws MovieDetailsException {
+	public ResponseEntity<MoviesList> getNowPlayingMoviesTheMovieDB(String type) throws MovieDetailsException {
 		ResponseEntity<MoviesList> response = null;
 		MoviesList listOfMovies = new MoviesList();
 		List<Movie> movieList = null;
@@ -81,8 +81,13 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			}
 
 			if (CollectionUtils.isEmpty(movieList)) {
-				ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE,
-						Constants.NOWPLAYING);
+				ApiUrl apiUrlToGetNowPlayingMovies = null;
+				if (type.equalsIgnoreCase("nowplaying"))
+					apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.NOWPLAYING);
+				else if (type.equalsIgnoreCase("popular"))
+					apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.POPULAR);
+				else if (type.equalsIgnoreCase("toprated"))
+					apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, Constants.TOPRATED);
 				apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
 				HttpHeaders headers = new HttpHeaders();
 				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -111,10 +116,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		}
 		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
 	}
-	
+
 	/**
-	 * A method which returns a list of 
-	 * showtimes for a specific movie
+	 * A method which returns a list of showtimes for a specific movie
 	 */
 	@Override
 	public List<Showtimes> getMovieShowtimes(String movieName, String movieId) throws MovieDetailsException {
@@ -147,7 +151,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		}
 		return listOfShowtimes.getShowtimes();
 	}
-	
+
 	/**
 	 * A method that returns a trailer link for a specific movie
 	 */
@@ -182,9 +186,10 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		return null;
 
 	}
-	
+
 	/**
-	 * A method that maps the cinema to the showtimes returned by the method getMovieShowtimes()
+	 * A method that maps the cinema to the showtimes returned by the method
+	 * getMovieShowtimes()
 	 */
 	@Override
 	public ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException {
