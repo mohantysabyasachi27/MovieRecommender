@@ -91,28 +91,31 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 				response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 						MoviesList.class);
-				listOfMovies = response.getBody();
-				listOfMovies.setStatusCode(Constants.STATUS_OK);
-				listOfMovies.setSuccess(true);
-				movieList = listOfMovies.getResults();
-				if (!CollectionUtils.isEmpty(movieList)) {
-					for (int i = 0; i < movieList.size(); i++) {
-
+				if (response != null && response.getStatusCode() == HttpStatus.OK) {
+					listOfMovies = response.getBody();
+					listOfMovies.setStatusCode(Constants.STATUS_OK);
+					listOfMovies.setSuccess(true);
+					movieList = listOfMovies.getResults();
+					for (int i = 0; i < movieList.size() && !CollectionUtils.isEmpty(movieList); i++) {
 						if (movieList.get(i).getPoster_image_thumbnail() == null) {
 							listOfMovies.getResults().remove(i);
 						}
 					}
-				}
 
-				cacheService.put(key, col, map.writeValueAsString(movieList));
-				logger.debug("Got the list of {}", movieList);
+					cacheService.put(key, col, map.writeValueAsString(movieList));
+					logger.debug("Got the list of {}", movieList);
+				}
 			}
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
 		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
 	}
-
+	
+	/**
+	 * A method which returns a list of 
+	 * showtimes for a specific movie
+	 */
 	@Override
 	public List<Showtimes> getMovieShowtimes(String movieName, String movieId) throws MovieDetailsException {
 
@@ -132,17 +135,22 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					ShowtimesList.class);
-			listOfShowtimes = response.getBody();
-			listOfShowtimes.setStatusCode(Constants.STATUS_OK);
-			listOfShowtimes.setSuccess(true);
-			logger.info("Got the list of {}", listOfShowtimes);
+			if (response != null && response.getStatusCode() == HttpStatus.OK) {
+				listOfShowtimes = response.getBody();
+				listOfShowtimes.setStatusCode(Constants.STATUS_OK);
+				listOfShowtimes.setSuccess(true);
+				logger.info("Got the list of {}", listOfShowtimes);
+			}
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 
 		}
 		return listOfShowtimes.getShowtimes();
 	}
-
+	
+	/**
+	 * A method that returns a trailer link for a specific movie
+	 */
 	@Override
 	public String getNowPlayingMoviesTrailers(String movieId) throws MovieDetailsException {
 
@@ -156,15 +164,17 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		try {
 			ResponseEntity<TrailersList> response1 = restTemplate.exchange(
 					apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity, TrailersList.class);
-			TrailersList listOfTrailers = null;
-			listOfTrailers = response1.getBody();
-			int size = listOfTrailers.getResults().size();
-			if (size >= 1)
-				listOfTrailers.getResults().subList(1, size).clear();
-			if (listOfTrailers.getResults() != null && size >= 1) {
-				return listOfTrailers.getResults().get(0).getSite();
+			if (response1 != null && response1.getStatusCode() == HttpStatus.OK) {
+				TrailersList listOfTrailers = null;
+				listOfTrailers = response1.getBody();
+				int size = listOfTrailers.getResults().size();
+				if (size >= 1)
+					listOfTrailers.getResults().subList(1, size).clear();
+				if (listOfTrailers.getResults() != null && size >= 1) {
+					return listOfTrailers.getResults().get(0).getSite();
+				}
+				logger.info("Got the list of {}", listOfTrailers.getResults());
 			}
-			logger.info("Got the list of {}", listOfTrailers.getResults());
 
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
@@ -172,7 +182,10 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		return null;
 
 	}
-
+	
+	/**
+	 * A method that maps the cinema to the showtimes returned by the method getMovieShowtimes()
+	 */
 	@Override
 	public ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException {
 
@@ -189,11 +202,13 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					CinemasList.class);
-			cinemasList = response.getBody();
-			cinemasList.setSite(getNowPlayingMoviesTrailers(movieId));
-			cinemasList.setStatusCode(Constants.STATUS_OK);
-			cinemasList.setSuccess(true);
-			logger.info("Got the list of {}", cinemasList.getCinemas());
+			if (response != null && response.getStatusCode() == HttpStatus.OK) {
+				cinemasList = response.getBody();
+				cinemasList.setSite(getNowPlayingMoviesTrailers(movieId));
+				cinemasList.setStatusCode(Constants.STATUS_OK);
+				cinemasList.setSuccess(true);
+				logger.info("Got the list of {}", cinemasList.getCinemas());
+			}
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
 		}
@@ -203,17 +218,22 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			cinemaMap.put(cinemasResponse.get(i).getId(), cinemasResponse.get(i));
 		}
 		List<Showtimes> showtimes = getMovieShowtimes(movieName, movieId);
-		for (int i = 0; i < showtimes.size(); i++) {
-			String id = showtimes.get(i).getCinema_id();
-			Cinema cinema = cinemaMap.get(id);
-			List<Showtimes> m = cinema.getMovieList();
-			if (m != null)
-				m.add(showtimes.get(i));
-			else {
-				m = new ArrayList<Showtimes>();
-				m.add(showtimes.get(i));
+		if (showtimes != null) {
+			for (int i = 0; i < showtimes.size(); i++) {
+				String id = showtimes.get(i).getCinema_id();
+				Cinema cinema;
+				if (id != null) {
+					cinema = cinemaMap.get(id);
+					List<Showtimes> m = cinema.getMovieList();
+					if (m != null)
+						m.add(showtimes.get(i));
+					else {
+						m = new ArrayList<Showtimes>();
+						m.add(showtimes.get(i));
+					}
+					cinema.setMovieList(m);
+				}
 			}
-			cinema.setMovieList(m);
 		}
 		return new ResponseEntity<CinemasList>(cinemasList, HttpStatus.OK);
 	}
