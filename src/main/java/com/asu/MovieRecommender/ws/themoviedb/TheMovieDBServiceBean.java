@@ -240,6 +240,10 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				}
 			}
 		}
+		for (int i = 0; i < cinemasList.getCinemas().size() && !CollectionUtils.isEmpty(cinemasList.getCinemas()); i++) {
+			if(cinemasList.getCinemas().get(i).getMovieList() == null)
+				cinemasList.getCinemas().remove(i);
+		}
 		return new ResponseEntity<CinemasList>(cinemasList, HttpStatus.OK);
 	}
 }
