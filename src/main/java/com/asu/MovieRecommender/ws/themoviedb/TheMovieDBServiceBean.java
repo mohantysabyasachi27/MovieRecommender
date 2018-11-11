@@ -67,19 +67,19 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		ObjectMapper map = new ObjectMapper();
 
 		try {
-
-			String key = userLoginService.getLoggedUserDetails().getUserName();
-			String col = "now_playing";
-			String cacheMovieList = cacheService.get(key, col) == null ? ""
-					: String.valueOf(cacheService.get(key, col));
-			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
-				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
-				});
-				listOfMovies.setStatusCode(Constants.STATUS_OK);
-				listOfMovies.setSuccess(true);
-				listOfMovies.setResults(movieList);
+			if (userLoginService.getLoggedUserDetails() != null) {
+				String key = userLoginService.getLoggedUserDetails().getUserName();
+				String col = "now_playing";
+				String cacheMovieList = cacheService.get(key, col) == null ? ""
+						: String.valueOf(cacheService.get(key, col));
+				if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
+					movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
+					});
+					listOfMovies.setStatusCode(Constants.STATUS_OK);
+					listOfMovies.setSuccess(true);
+					listOfMovies.setResults(movieList);
+				}
 			}
-
 			if (CollectionUtils.isEmpty(movieList)) {
 				ApiUrl apiUrlToGetNowPlayingMovies = null;
 				if (type.equalsIgnoreCase("nowplaying"))
@@ -107,7 +107,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 						}
 					}
 
-					cacheService.put(key, col, map.writeValueAsString(movieList));
+					//cacheService.put(key, col, map.writeValueAsString(movieList));
 					logger.debug("Got the list of {}", movieList);
 				}
 			}
@@ -240,8 +240,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				}
 			}
 		}
-		for (int i = 0; i < cinemasList.getCinemas().size() && !CollectionUtils.isEmpty(cinemasList.getCinemas()); i++) {
-			if(cinemasList.getCinemas().get(i).getMovieList() == null)
+		for (int i = 0; i < cinemasList.getCinemas().size()
+				&& !CollectionUtils.isEmpty(cinemasList.getCinemas()); i++) {
+			if (cinemasList.getCinemas().get(i).getMovieList() == null)
 				cinemasList.getCinemas().remove(i);
 		}
 		return new ResponseEntity<CinemasList>(cinemasList, HttpStatus.OK);
