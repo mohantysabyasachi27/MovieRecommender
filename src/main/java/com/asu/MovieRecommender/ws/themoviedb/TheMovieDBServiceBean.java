@@ -67,7 +67,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		ObjectMapper map = new ObjectMapper();
 
 		try {
-			String key = userLoginService.getLoggedUserDetails().getUserName();
+			/*String key = userLoginService.getLoggedUserDetails().getUserName();
 			String col = "now_playing";
 			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
 			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
@@ -76,7 +76,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				listOfMovies.setStatusCode(Constants.STATUS_OK);
 				listOfMovies.setSuccess(true);
 				listOfMovies.setResults(movieList);
-			}
+			}*/
 
 			if (CollectionUtils.isEmpty(movieList)) {
 				ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE,
@@ -102,7 +102,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				getNowPlayingMoviesTrailers(movieList);
 			}
 			
-			cacheService.put(key, col, map.writeValueAsString(movieList));
+			//cacheService.put(key, col, map.writeValueAsString(movieList));
 			logger.debug("Got the list of {}", movieList);
 			}	
 		} catch (Exception exception) {
