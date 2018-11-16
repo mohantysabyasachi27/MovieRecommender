@@ -25,11 +25,8 @@ import com.asu.MovieRecommender.Services.CacheService;
 import com.asu.MovieRecommender.UserService.UserLoginService;
 import com.asu.MovieRecommender.utility.ApiUrl;
 import com.asu.MovieRecommender.utility.Constants;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 /**
  * @author leharbhatt
@@ -71,19 +68,17 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		ObjectMapper map = new ObjectMapper();
 
 		try {
-			if (userLoginService.getLoggedUserDetails() != null) {
-				String key = userLoginService.getLoggedUserDetails().getUserName();
-				String col = "now_playing";
-				String cacheMovieList = cacheService.get(key, col) == null ? ""
-						: String.valueOf(cacheService.get(key, col));
-				if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
-					movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
-					});
-					listOfMovies.setStatusCode(Constants.STATUS_OK);
-					listOfMovies.setSuccess(true);
-					listOfMovies.setResults(movieList);
-				}
-			}
+			/*String key = userLoginService.getLoggedUserDetails().getUserName();
+			String col = "now_playing";
+			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
+			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
+				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
+				});
+				listOfMovies.setStatusCode(Constants.STATUS_OK);
+				listOfMovies.setSuccess(true);
+				listOfMovies.setResults(movieList);
+			}*/
+
 			if (CollectionUtils.isEmpty(movieList)) {
 				ApiUrl apiUrlToGetNowPlayingMovies = null;
 				if (type.equalsIgnoreCase("nowplaying"))
