@@ -2,8 +2,10 @@ package com.asu.MovieRecommender.ws.themoviedb;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +27,7 @@ import com.asu.MovieRecommender.utility.ApiUrl;
 import com.asu.MovieRecommender.utility.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 
@@ -51,6 +54,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	@Autowired
 	private UserLoginService userLoginService;
 
+	private static CinemasList cinemasList = null;
 	/**
 	 * This method invokes the movieDb api to get now playing movies and returns the
 	 * response to the user.
@@ -107,7 +111,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 						}
 					}
 
-					//cacheService.put(key, col, map.writeValueAsString(movieList));
+					// cacheService.put(key, col, map.writeValueAsString(movieList));
 					logger.debug("Got the list of {}", movieList);
 				}
 			}
@@ -135,6 +139,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		ResponseEntity<ShowtimesList> response = null;
 		ShowtimesList listOfShowtimes = null;
+		Map<String, List<Showtimes>> map = null;
 
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
@@ -143,6 +148,35 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				listOfShowtimes = response.getBody();
 				listOfShowtimes.setStatusCode(Constants.STATUS_OK);
 				listOfShowtimes.setSuccess(true);
+				List<Showtimes> shows = listOfShowtimes.getShowtimes();
+
+				map = Cinema.getDateShowtime();
+				for (int i = 0; i < shows.size(); i++) {
+					if (null != shows.get(i)) {
+						String date = shows.get(i).getStart_at();
+						Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(date);
+						String num = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+						 if(map.containsKey(num)) {
+							 List<Showtimes> list = map.get(num);
+							 list.add(shows.get(i));
+							 map.put(num, list);
+						 }
+						 else {
+							 List<Showtimes> list = new ArrayList<Showtimes>();
+							 list.add(shows.get(i));
+							 map.put(num, list);
+						 }
+					}
+				}
+				List<DateList> datelist = new ArrayList<DateList>();
+				for(String str: map.keySet()) {
+					DateList dl = new DateList();
+					dl.setDate(str);
+					dl.setShows(map.get(str));
+					datelist.add(dl);
+				}
+
+				cinemasList.setDateList(datelist);
 				logger.info("Got the list of {}", listOfShowtimes);
 			}
 		} catch (Exception exception) {
@@ -203,7 +237,6 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
 		HashMap<String, Cinema> cinemaMap = new HashMap<String, Cinema>();
 		ResponseEntity<CinemasList> response = null;
-		CinemasList cinemasList = null;
 		try {
 			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
 					CinemasList.class);
@@ -212,7 +245,6 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				cinemasList.setSite(getNowPlayingMoviesTrailers(movieId));
 				cinemasList.setStatusCode(Constants.STATUS_OK);
 				cinemasList.setSuccess(true);
-				logger.info("Got the list of {}", cinemasList.getCinemas());
 			}
 		} catch (Exception exception) {
 			throw new MovieDetailsException(exception.getMessage());
@@ -229,14 +261,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 				Cinema cinema;
 				if (id != null) {
 					cinema = cinemaMap.get(id);
-					List<Showtimes> m = cinema.getMovieList();
-					if (m != null)
-						m.add(showtimes.get(i));
-					else {
-						m = new ArrayList<Showtimes>();
-						m.add(showtimes.get(i));
-					}
-					cinema.setMovieList(m);
+					showtimes.get(i).setName(cinema.getName());
 				}
 			}
 		}

@@ -1,5 +1,8 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Maps the showtimes to JSON object.
  * 
@@ -8,11 +11,12 @@ package com.asu.MovieRecommender.ws.themoviedb;
  */
 public class Showtimes {
 
-	public Showtimes(String cinema_id, String start_at, String booking_link) {
+	public Showtimes(String cinema_id, String start_at, String booking_link, String name) {
 		super();
 		this.cinema_id = cinema_id;
 		this.start_at = start_at;
 		this.booking_link = booking_link;
+		this.name = name;
 	}
 
 	public Showtimes() {
@@ -20,12 +24,16 @@ public class Showtimes {
 	}
 
 	private String cinema_id;
+	private String name;
 	private String start_at;
 	private String booking_link;
+	
+	@JsonIgnore
 	public String getCinema_id() {
 		return cinema_id;
 	}
-
+	
+	@JsonProperty
 	public void setCinema_id(String cinema_id) {
 		this.cinema_id = cinema_id;
 	}
@@ -49,6 +57,14 @@ public class Showtimes {
 	@Override
 	public String toString() {
 		return "Showtimes [cinema_id=" + cinema_id + ", start_at=" + start_at + ", booking_link=" + booking_link + "]";
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
