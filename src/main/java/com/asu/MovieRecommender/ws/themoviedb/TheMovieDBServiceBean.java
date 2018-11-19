@@ -267,4 +267,39 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		}
 		return new ResponseEntity<CinemasList>(cinemasList, HttpStatus.OK);
 	}
+	
+	@Override
+	public ResponseEntity<MoviesList>  getRecommendedMovies(String movieId) throws MovieDetailsException {
+		HttpHeaders headers = new HttpHeaders();
+		ResponseEntity<MoviesList> response = null;
+		MoviesList listOfMovies = new MoviesList();
+		List<Movie> movieList = null;
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, movieId, Constants.RECOMMENDATIONS);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+
+		try {
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
+					MoviesList.class);
+			if (response != null && response.getStatusCode() == HttpStatus.OK) {
+				listOfMovies = response.getBody();
+				listOfMovies.setStatusCode(Constants.STATUS_OK);
+				listOfMovies.setSuccess(true);
+				movieList = listOfMovies.getResults();
+				for (int i = 0; i < movieList.size() && !CollectionUtils.isEmpty(movieList); i++) {
+					if (movieList.get(i).getPoster_image_thumbnail() == null) {
+						listOfMovies.getResults().remove(i);
+					}
+				}
+
+				// cacheService.put(key, col, map.writeValueAsString(movieList));
+				logger.debug("Got the list of {}", movieList);
+			}
+		} catch (Exception exception) {
+			throw new MovieDetailsException(exception.getMessage());
+		}
+		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
+	}
 }

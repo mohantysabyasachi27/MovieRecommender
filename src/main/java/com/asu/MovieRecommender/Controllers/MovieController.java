@@ -80,4 +80,22 @@ public class MovieController {
 		}
 		return listOfShowtimes;
 	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/getRecommendedMovies", method = RequestMethod.POST, produces = "application/json")
+	public ResponseEntity<MoviesList> getRecommendedMovies(@RequestParam("movieId") String movieId) {
+		ResponseEntity<MoviesList> listOfMovies = null;
+		try {
+			/*if(!userLoginService.isLoggedIn()) {
+				return new ResponseEntity<MoviesList>(
+						new MoviesList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
+			}*/
+			listOfMovies = theMovieDBService.getRecommendedMovies(movieId);
+		} catch (MovieDetailsException exception) {
+			logger.error(exception.getErrorMessage(), exception);
+			return new ResponseEntity<MoviesList>(
+					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
+		}
+		return listOfMovies;
+	}
 }

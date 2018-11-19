@@ -20,4 +20,6 @@ public interface TheMovieDBService {
 	String getNowPlayingMoviesTrailers(String movieId) throws MovieDetailsException;
 
 	ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException;
+
+	ResponseEntity<MoviesList> getRecommendedMovies(String movieId) throws MovieDetailsException;
 }
