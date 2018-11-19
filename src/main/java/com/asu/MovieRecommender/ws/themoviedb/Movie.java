@@ -1,5 +1,7 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -40,7 +42,9 @@ public class Movie {
 	}
 
 	public void setPoster_image_thumbnail(String poster_image_thumbnail) {
-		this.poster_image_thumbnail = "http://image.tmdb.org/t/p/original"+poster_image_thumbnail;
+		if(StringUtils.isNotBlank(poster_image_thumbnail)) {
+			this.poster_image_thumbnail = "http://image.tmdb.org/t/p/original"+poster_image_thumbnail;
+		}
 	}
 
 	public String getTitle() {
