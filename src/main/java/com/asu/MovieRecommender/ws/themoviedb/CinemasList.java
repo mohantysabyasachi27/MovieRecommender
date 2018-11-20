@@ -1,7 +1,9 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,6 +20,15 @@ public class CinemasList implements Serializable {
 	private String site;
 	private List<Cinema> cinemas;
 	private List<DateList> dateList;
+	Map<String, Map<String, List<ShowDetails>>> showtimesByTheatreAndDate = new HashMap<>();
+
+	public Map<String, Map<String, List<ShowDetails>>> getShowtimesByTheatreAndDate() {
+		return showtimesByTheatreAndDate;
+	}
+
+	public void setShowtimesByTheatreAndDate(Map<String, Map<String, List<ShowDetails>>> showtimesByTheatreAndDate) {
+		this.showtimesByTheatreAndDate = showtimesByTheatreAndDate;
+	}
 
 	public CinemasList(String statusCode, boolean success, String errorMessage) {
 		super();

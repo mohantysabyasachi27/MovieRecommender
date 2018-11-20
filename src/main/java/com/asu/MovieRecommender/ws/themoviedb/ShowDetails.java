@@ -3,7 +3,8 @@ package com.asu.MovieRecommender.ws.themoviedb;
 import java.io.Serializable;
 
 public class ShowDetails implements Serializable {
-	
+
+	private static final long serialVersionUID = -6437940778566869139L;
 	private String cinemaId;
 	public ShowDetails(String cinemaId, String bookingLink, String showTime) {
 		super();
@@ -36,6 +37,11 @@ public class ShowDetails implements Serializable {
 	}
 	private String bookingLink;
 	private String showTime;
+	
+	@Override
+	public String toString() {
+		return "ShowDetails [cinemaId=" + cinemaId + ", bookingLink=" + bookingLink + ", showTime=" + showTime + "]";
+	}
 	
 
 }

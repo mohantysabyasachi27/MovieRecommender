@@ -1,5 +1,6 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
@@ -28,7 +31,7 @@ import com.asu.MovieRecommender.UserService.UserLoginService;
 import com.asu.MovieRecommender.utility.ApiUrl;
 import com.asu.MovieRecommender.utility.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.util.CollectionUtils;
+
 
 /**
  * @author leharbhatt
@@ -183,7 +186,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		return listOfShowtimes.getShowtimes();
 	}
 
-	public Map<String, List<ShowDetails>> putMovieShowtimes(String movieName, String movieId) throws Exception {
+	public Map<String, List<ShowDetails>> fetchMovieShowtimes(String movieName, String movieId) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.API_KEY_STRING, apiKeyValue);
 		headers.add("user-agent",
@@ -231,7 +234,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 						bookingLink = showTime.getBooking_link();
 						if (StringUtils.isNotBlank(startTime)) {
 							date = startTime.substring(0, 10);
-							time = startTime.substring(11, 18);
+							time = startTime.substring(11, 19);
 						}
 						if (StringUtils.isNotBlank(date) && StringUtils.isNotBlank(time)) {
 
@@ -242,6 +245,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 							} else {
 								showDetails = new ArrayList<>();
 								showDetails.add(new ShowDetails(cinemaId, bookingLink, time));
+								showsMapByDate.put(date, showDetails);
 							}
 						}
 
@@ -386,5 +390,122 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 			throw new MovieDetailsException(exception.getMessage());
 		}
 		return new ResponseEntity<MoviesList>(listOfMovies, HttpStatus.OK);
+	}
+	
+	@Override
+	public ResponseEntity<CinemasList> getCinemasNew(String movieName, String movieId) throws MovieDetailsException {
+		String city = Constants.TEMPE;
+		CinemasList cinemaList = new CinemasList();
+		Map<String, Map<String, List<ShowDetails>>> showtimesByTheatreAndDate = new HashMap<>();
+		try {
+			putTheatreForCity(city);
+			cinemaList.setSite(getCachedTrailerUrl(movieId));
+
+			Map<String, List<ShowDetails>> map = fetchMovieShowtimes(movieName, movieId);
+
+			for (Map.Entry<String, List<ShowDetails>> entry : map.entrySet()) {
+
+				if (!showtimesByTheatreAndDate.containsKey(entry.getKey())) {
+					Map<String, List<ShowDetails>> tempMap = new HashMap<>();
+
+					for (ShowDetails show : entry.getValue()) {
+						String theatreName = cacheService.get(CacheService.THEATRE_KEY + city, show.getCinemaId());
+						if (tempMap.containsKey(theatreName)) {
+							tempMap.get(theatreName).add(show);
+						} else {
+							List<ShowDetails> list = new ArrayList<>();
+							list.add(show);
+							tempMap.put(theatreName, list);
+						}
+
+					}
+
+					showtimesByTheatreAndDate.put(entry.getKey(), tempMap);
+
+				} else {
+					Map<String, List<ShowDetails>> tempMap = showtimesByTheatreAndDate.get(entry.getKey());
+
+					for (ShowDetails show : entry.getValue()) {
+						String theatreName = cacheService.get(CacheService.THEATRE_KEY + city, show.getCinemaId());
+						if (tempMap.containsKey(theatreName)) {
+							tempMap.get(theatreName).add(show);
+						} else {
+							List<ShowDetails> list = new ArrayList<>();
+							list.add(show);
+							tempMap.put(theatreName, list);
+						}
+
+					}
+				}
+			}
+
+		} catch (MovieDetailsException e) {
+			logger.error("Error while putting theatre names to the cache for city: {}.", city, e);
+			throw new MovieDetailsException("Error while putting theatre names to the cache for city:" + city);
+		} catch (RestClientException e) {
+			throw new MovieDetailsException("Error while putting theatre names to the cache for city:" + city);
+		} catch (URISyntaxException e) {
+			throw new MovieDetailsException("Error while putting theatre names to the cache for city:" + city);
+		} catch(Exception e) {
+			throw new MovieDetailsException("Error while putting theatre names to the cache for city:" + city);
+		}
+		
+		cinemaList.setShowtimesByTheatreAndDate(showtimesByTheatreAndDate);
+
+		return new ResponseEntity<CinemasList>(cinemaList, HttpStatus.OK);
+	}
+
+	public void putTheatreForCity(String city) throws MovieDetailsException {
+		if (cacheService.get(CacheService.THEATRE_KEY + city).isEmpty()) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(Constants.API_KEY_STRING, apiKeyValue);
+			headers.add("user-agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+			HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
+			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.CINEMAS);
+			apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, city);
+			ResponseEntity<CinemasList> response = null;
+			try {
+				response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
+						CinemasList.class);
+				if (response != null && response.getStatusCode() == HttpStatus.OK && response.getBody() != null
+						&& !CollectionUtils.isEmpty(response.getBody().getCinemas())) {
+					for (Cinema c : response.getBody().getCinemas()) {
+						cacheService.put(CacheService.THEATRE_KEY + city, c.getId(), c.getName());
+						System.out.println(c.getId() + "::" + c.getName());
+					}
+				}
+			} catch (Exception exception) {
+				throw new MovieDetailsException(exception.getMessage());
+			}
+		}
+	}
+	
+	
+	private String getCachedTrailerUrl(String movieId) throws RestClientException, URISyntaxException {
+		String trailerUrl = cacheService.get(CacheService.TRAILER_KEY, movieId);
+		if (StringUtils.isBlank(trailerUrl)) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("user-agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+			ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, movieId,
+					Constants.VIDEOS);
+			apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
+
+			ResponseEntity<TrailersList> response1 = restTemplate.exchange(
+					apiUrlToGetNowPlayingMovies.buildUrl().toURI(), HttpMethod.GET, entity, TrailersList.class);
+			if (response1 != null && response1.getStatusCode() == HttpStatus.OK) {
+				TrailersList listOfTrailers = response1.getBody();
+				if (listOfTrailers != null && !CollectionUtils.isEmpty(listOfTrailers.getResults()))
+					for (Trailer t : listOfTrailers.getResults()) {
+						if (StringUtils.isNotBlank(t.getSite())) {
+							cacheService.put(CacheService.TRAILER_KEY, movieId, t.getSite());
+							return t.getSite();
+						}
+					}
+			}
+		}
+		return trailerUrl;
 	}
 }

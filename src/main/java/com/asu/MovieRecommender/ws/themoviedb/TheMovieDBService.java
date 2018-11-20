@@ -3,6 +3,7 @@ package com.asu.MovieRecommender.ws.themoviedb;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+
 import com.asu.MovieRecommender.Exceptions.MovieDetailsException;
 
 /**
@@ -22,4 +23,6 @@ public interface TheMovieDBService {
 	ResponseEntity<CinemasList> getCinemas(String movieName, String movieId) throws MovieDetailsException;
 
 	ResponseEntity<MoviesList> getRecommendedMovies(String movieId) throws MovieDetailsException;
+
+	public ResponseEntity<CinemasList> getCinemasNew(String movieName, String movieId) throws MovieDetailsException;
 }

@@ -72,7 +72,7 @@ public class MovieController {
 						new CinemasList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
 			}*/
 			
-			listOfShowtimes = theMovieDBService.getCinemas(movieName, movieId);
+			listOfShowtimes = theMovieDBService.getCinemasNew(movieName, movieId);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<CinemasList>(
