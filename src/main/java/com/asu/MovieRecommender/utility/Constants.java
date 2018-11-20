@@ -33,5 +33,8 @@ public class Constants {
 	/*Status Codes*/
 	public final static String STATUS_OK = "200";
 	public static final Object CINEMAS = "/cinemas";
+	public static final Object POPULAR = "popular";
+	public static final Object TOPRATED = "top_rated";
+	public static final Object RECOMMENDATIONS = "recommendations";
 	
 }

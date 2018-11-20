@@ -1,9 +1,5 @@
 package com.asu.MovieRecommender.Controllers;
 
-import java.security.Principal;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +43,16 @@ public class MovieController {
 	 * 
 	 * @return JSONObject
 	 */
-	
-	@RequestMapping(value = "/api/getMovies", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<MoviesList> getListOfMovies(HttpServletRequest request) {
+	@PostMapping
+	@RequestMapping(value = "/api/getMovies", method = RequestMethod.POST, produces = "application/json")
+	public ResponseEntity<MoviesList> getListOfMovies(@RequestParam("type") String type) {
 		ResponseEntity<MoviesList> listOfMovies = null;
 		try {
 			/*if(!userLoginService.isLoggedIn()) {
 				return new ResponseEntity<MoviesList>(
 						new MoviesList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
 			}*/
-			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB();
+			listOfMovies = theMovieDBService.getNowPlayingMoviesTheMovieDB(type);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<MoviesList>(
@@ -68,20 +64,38 @@ public class MovieController {
 	
 	@PostMapping
 	@RequestMapping(value = "/api/getShowtimes", produces = "application/json")
-	public ResponseEntity<CinemasList> getMovieShowtime(@RequestParam("movieName") String movieName) {
+	public ResponseEntity<CinemasList> getMovieShowtime(@RequestParam("movieName") String movieName, @RequestParam("movieId") String movieId) {
 		ResponseEntity<CinemasList> listOfShowtimes = null;
 		try {
-			if(!userLoginService.isLoggedIn()) {
+			/*if(!userLoginService.isLoggedIn()) {
 				return new ResponseEntity<CinemasList>(
 						new CinemasList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
-			}
+			}*/
 			
-			listOfShowtimes = theMovieDBService.getCinemas(movieName);
+			listOfShowtimes = theMovieDBService.getCinemasNew(movieName, movieId);
 		} catch (MovieDetailsException exception) {
 			logger.error(exception.getErrorMessage(), exception);
 			return new ResponseEntity<CinemasList>(
 					new CinemasList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
 		}
 		return listOfShowtimes;
+	}
+	
+	@PostMapping
+	@RequestMapping(value = "/api/getRecommendedMovies", method = RequestMethod.POST, produces = "application/json")
+	public ResponseEntity<MoviesList> getRecommendedMovies(@RequestParam("movieId") String movieId) {
+		ResponseEntity<MoviesList> listOfMovies = null;
+		try {
+			/*if(!userLoginService.isLoggedIn()) {
+				return new ResponseEntity<MoviesList>(
+						new MoviesList(HttpStatus.FORBIDDEN.toString(), false, String.valueOf("User is not Logged in!!")), HttpStatus.OK);
+			}*/
+			listOfMovies = theMovieDBService.getRecommendedMovies(movieId);
+		} catch (MovieDetailsException exception) {
+			logger.error(exception.getErrorMessage(), exception);
+			return new ResponseEntity<MoviesList>(
+					new MoviesList(HttpStatus.FORBIDDEN.toString(), false, exception.getErrorMessage()), HttpStatus.OK);
+		}
+		return listOfMovies;
 	}
 }

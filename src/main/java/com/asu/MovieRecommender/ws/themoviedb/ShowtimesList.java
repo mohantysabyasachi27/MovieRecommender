@@ -19,12 +19,13 @@ public class ShowtimesList implements Serializable {
 	private String statusCode;
 	private boolean success;
 	private String errorReason;
+
 	
 	public ShowtimesList(){
 		
 	}
 	
-	public ShowtimesList(String statusCode, boolean success, String errorReason) {
+	public ShowtimesList(String statusCode, boolean success, String errorReason, String site) {
 		super();
 		this.setStatusCode(statusCode);
 		this.setSuccess(success);

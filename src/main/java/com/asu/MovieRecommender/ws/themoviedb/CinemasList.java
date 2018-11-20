@@ -1,7 +1,12 @@
 package com.asu.MovieRecommender.ws.themoviedb;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CinemasList implements Serializable {
 
@@ -9,11 +14,21 @@ public class CinemasList implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -898623802841147377L;
-
-	private List<Cinema> cinemas;
 	private String statusCode;
 	private boolean success;
 	private String errorMessage;
+	private String site;
+	private List<Cinema> cinemas;
+	private List<DateList> dateList;
+	Map<String, Map<String, List<ShowDetails>>> showtimesByTheatreAndDate = new HashMap<>();
+
+	public Map<String, Map<String, List<ShowDetails>>> getShowtimesByTheatreAndDate() {
+		return showtimesByTheatreAndDate;
+	}
+
+	public void setShowtimesByTheatreAndDate(Map<String, Map<String, List<ShowDetails>>> showtimesByTheatreAndDate) {
+		this.showtimesByTheatreAndDate = showtimesByTheatreAndDate;
+	}
 
 	public CinemasList(String statusCode, boolean success, String errorMessage) {
 		super();
@@ -25,15 +40,6 @@ public class CinemasList implements Serializable {
 	public CinemasList() {
 		super();
 	}
-
-	public List<Cinema> getCinemas() {
-		return cinemas;
-	}
-
-	public void setCinemas(List<Cinema> cinemas) {
-		this.cinemas = cinemas;
-	}
-
 	public String getStatusCode() {
 		return statusCode;
 	}
@@ -58,12 +64,34 @@ public class CinemasList implements Serializable {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
+	}
+
 	@Override
 	public String toString() {
-		return "CinemasList [cinemas=" + cinemas + ", statusCode=" + statusCode + ", success=" + success
+		return "CinemasList [statusCode=" + statusCode + ", success=" + success
 				+ ", errorMessage=" + errorMessage + "]";
 	}
 	
-	
+	@JsonIgnore
+	public List<Cinema> getCinemas() {
+		return cinemas;
+	}
+	@JsonProperty
+	public void setCinemas(List<Cinema> cinemas) {
+		this.cinemas = cinemas;
+	}
+
+	public List<DateList> getDateList() {
+		return dateList;
+	}
+	public void setDateList(List<DateList> dateList) {
+		this.dateList = dateList;
+	}
 
 }
