@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -52,6 +54,7 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 	private UserLoginService userLoginService;
 
 	private static CinemasList cinemasList = null;
+
 	/**
 	 * This method invokes the movieDb api to get now playing movies and returns the
 	 * response to the user.
@@ -68,16 +71,16 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		ObjectMapper map = new ObjectMapper();
 
 		try {
-			/*String key = userLoginService.getLoggedUserDetails().getUserName();
-			String col = "now_playing";
-			String cacheMovieList = cacheService.get(key, col) == null ? "" : String.valueOf(cacheService.get(key, col));
-			if (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
-				movieList = map.readValue(cacheMovieList.getBytes(), new TypeReference<List<Movie>>() {
-				});
-				listOfMovies.setStatusCode(Constants.STATUS_OK);
-				listOfMovies.setSuccess(true);
-				listOfMovies.setResults(movieList);
-			}*/
+			/*
+			 * String key = userLoginService.getLoggedUserDetails().getUserName(); String
+			 * col = "now_playing"; String cacheMovieList = cacheService.get(key, col) ==
+			 * null ? "" : String.valueOf(cacheService.get(key, col)); if
+			 * (StringUtils.isNotBlank(cacheMovieList) && StringUtils.isNotBlank(key)) {
+			 * movieList = map.readValue(cacheMovieList.getBytes(), new
+			 * TypeReference<List<Movie>>() { });
+			 * listOfMovies.setStatusCode(Constants.STATUS_OK);
+			 * listOfMovies.setSuccess(true); listOfMovies.setResults(movieList); }
+			 */
 
 			if (CollectionUtils.isEmpty(movieList)) {
 				ApiUrl apiUrlToGetNowPlayingMovies = null;
@@ -151,20 +154,19 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 						String date = shows.get(i).getStart_at();
 						Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(date);
 						String num = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
-						 if(map.containsKey(num)) {
-							 List<Showtimes> list = map.get(num);
-							 list.add(shows.get(i));
-							 map.put(num, list);
-						 }
-						 else {
-							 List<Showtimes> list = new ArrayList<Showtimes>();
-							 list.add(shows.get(i));
-							 map.put(num, list);
-						 }
+						if (map.containsKey(num)) {
+							List<Showtimes> list = map.get(num);
+							list.add(shows.get(i));
+							map.put(num, list);
+						} else {
+							List<Showtimes> list = new ArrayList<Showtimes>();
+							list.add(shows.get(i));
+							map.put(num, list);
+						}
 					}
 				}
 				List<DateList> datelist = new ArrayList<DateList>();
-				for(String str: map.keySet()) {
+				for (String str : map.keySet()) {
 					DateList dl = new DateList();
 					dl.setDate(str);
 					dl.setShows(map.get(str));
@@ -179,6 +181,88 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 
 		}
 		return listOfShowtimes.getShowtimes();
+	}
+
+	public Map<String, List<ShowDetails>> putMovieShowtimes(String movieName, String movieId) throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(Constants.API_KEY_STRING, apiKeyValue);
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		HttpEntity<String> entity = new HttpEntity<String>(Constants.PARAMETERS, headers);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL, Constants.SHOWTIMES);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.CITY_ID, Constants.TEMPE);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_QUERY, movieName);
+		apiUrlToGetNowPlayingMovies.addParam(Constants.SEARCH_FIELD, Constants.CINEMA_MOVIE_TITLE);
+
+		ResponseEntity<ShowtimesList> response = null;
+		ShowtimesList showList = null;
+		List<Showtimes> listShowtimes = null;
+
+		try {
+			response = restTemplate.exchange(apiUrlToGetNowPlayingMovies.buildUrlString(), HttpMethod.GET, entity,
+					ShowtimesList.class);
+			logger.debug(response.toString());
+			if (null != response && response.getStatusCode() == HttpStatus.OK && null != response.getBody()) {
+
+				showList = response.getBody();
+				listShowtimes = showList.getShowtimes();
+				int iLength = listShowtimes.size();
+
+				if (iLength > 0) {
+					int i = 0;
+					String startTime = null;
+					Showtimes showTime = null;
+					Map<String, List<ShowDetails>> showsMapByDate = new HashMap<>();
+					String date = null;
+					String time = null;
+					String cinemaId = null;
+					String bookingLink = null;
+					List<ShowDetails> showDetails = null;
+					for (i = 0; i < iLength; i++) {
+						showTime = null;
+						startTime = null;
+						cinemaId = null;
+						bookingLink = null;
+						showDetails = null;
+						showTime = listShowtimes.get(i);
+
+						startTime = showTime.getStart_at();
+						cinemaId = showTime.getCinema_id();
+						bookingLink = showTime.getBooking_link();
+						if (StringUtils.isNotBlank(startTime)) {
+							date = startTime.substring(0, 10);
+							time = startTime.substring(11, 18);
+						}
+						if (StringUtils.isNotBlank(date) && StringUtils.isNotBlank(time)) {
+
+							if (showsMapByDate.containsKey(date)) {
+								showDetails = showsMapByDate.get(date);
+								showDetails.add(new ShowDetails(cinemaId, bookingLink, time));
+								showsMapByDate.put(date, showDetails);
+							} else {
+								showDetails = new ArrayList<>();
+								showDetails.add(new ShowDetails(cinemaId, bookingLink, time));
+							}
+						}
+
+					}
+
+					return showsMapByDate;
+
+				} else {
+					logger.debug("Check the response body");
+					throw new MovieDetailsException("The response body has no content or is null");
+				}
+
+			} else {
+				logger.debug("The error in API call or response is null");
+				throw new MovieDetailsException("Error in API call");
+
+			}
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
 	}
 
 	/**
@@ -267,9 +351,9 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		}
 		return new ResponseEntity<CinemasList>(cinemasList, HttpStatus.OK);
 	}
-	
+
 	@Override
-	public ResponseEntity<MoviesList>  getRecommendedMovies(String movieId) throws MovieDetailsException {
+	public ResponseEntity<MoviesList> getRecommendedMovies(String movieId) throws MovieDetailsException {
 		HttpHeaders headers = new HttpHeaders();
 		ResponseEntity<MoviesList> response = null;
 		MoviesList listOfMovies = new MoviesList();
@@ -277,7 +361,8 @@ public class TheMovieDBServiceBean implements TheMovieDBService {
 		headers.add("user-agent",
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, movieId, Constants.RECOMMENDATIONS);
+		ApiUrl apiUrlToGetNowPlayingMovies = new ApiUrl(Constants.URL_TMDB, Constants.MOVIE, movieId,
+				Constants.RECOMMENDATIONS);
 		apiUrlToGetNowPlayingMovies.addParam(Constants.PARAM_API_KEY, apiKeyValueTheMovieDB);
 
 		try {
